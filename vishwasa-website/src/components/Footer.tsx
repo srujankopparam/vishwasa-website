@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShieldCheck } from 'lucide-react';
 
 export default function Footer() {
@@ -7,7 +8,12 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="font-serif text-2xl font-bold mb-4 text-cream">Vishwasa</h3>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-white rounded p-1 flex items-center justify-center">
+                <Image src="/logo.png" alt="Vishwasa Logo" width={32} height={32} className="object-contain" />
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-cream">Vishwasa</h3>
+            </div>
             <p className="text-cream/80 max-w-sm mb-4">Mother&apos;s Trust, Nature&apos;s Best. Traditional recipes made with better ingredients.</p>
             <div className="flex items-center gap-2 text-sm text-cream/90 bg-cream/10 p-2 rounded inline-block">
               <ShieldCheck size={16} />

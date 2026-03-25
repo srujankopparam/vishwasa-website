@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Lock, Plus, Trash2, Edit2, LogOut, Database } from "lucide-react";
+import { Lock, Plus, Trash2, Edit2, LogOut, Database, CheckCircle } from "lucide-react";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

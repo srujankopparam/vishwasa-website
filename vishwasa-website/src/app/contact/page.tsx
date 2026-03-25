@@ -41,8 +41,8 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-bold text-xl text-brown mb-2">WhatsApp Us</h3>
                 <p className="text-brown/70 mb-4">Fastest way to order or ask questions.</p>
-                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="text-green font-bold hover:underline">
-                  +91 98765 43210
+                <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918310236708"}`} target="_blank" rel="noopener noreferrer" className="text-green font-bold hover:underline">
+                  +{process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918310236708"}
                 </a>
               </div>
             </div>

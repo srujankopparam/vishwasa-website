@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu } from 'lucide-react';
 
 export default function Navbar() {
@@ -6,8 +7,9 @@ export default function Navbar() {
     <nav className="bg-cream border-b border-brown/10 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          <Link href="/" className="font-serif text-3xl font-bold text-brown tracking-tight">
-            Vishwasa
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Image src="/logo.png" alt="Vishwasa Logo" width={40} height={40} className="object-contain" />
+            <span className="font-serif text-3xl font-bold text-brown tracking-tight">Vishwasa</span>
           </Link>
           <div className="hidden md:flex space-x-8">
             <Link href="/" className="text-brown hover:text-orange transition-colors font-medium">Home</Link>
