@@ -12,7 +12,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Sidebar() {
   const pathname = usePathname();

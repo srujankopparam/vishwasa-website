@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function CartSidebar() {
   const {

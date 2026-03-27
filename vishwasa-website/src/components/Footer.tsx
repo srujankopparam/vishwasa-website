@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ShieldCheck } from 'lucide-react';
-import { useSettings } from '@/context/SettingsContext';
+import { useSettings } from "../context/SettingsContext";
 
 export default function Footer() {
   const settings = useSettings();

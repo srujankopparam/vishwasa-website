@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Plus, Edit2, Trash2, Search, Filter, Package } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/context/AuthContext";
-import ProductForm from "@/components/admin/ProductForm";
+import { useAuth } from "../../../context/AuthContext";
+import ProductForm from "../../../components/admin/ProductForm";
 
 export default function ProductManager() {
   const [products, setProducts] = useState<any[]>([]);

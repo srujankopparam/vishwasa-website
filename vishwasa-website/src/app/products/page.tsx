@@ -1,5 +1,5 @@
 import { sql } from "@vercel/postgres";
-import ProductList from "@/components/ProductList";
+import ProductList from "../../components/ProductList";
 
 export const dynamic = "force-dynamic";
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Leaf, Droplets, Heart } from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Home() {
   const settings = useSettings();

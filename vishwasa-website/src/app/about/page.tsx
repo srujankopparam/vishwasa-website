@@ -1,7 +1,7 @@
 "use client";
 
 import { Target, Heart, ShieldCheck } from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function AboutPage() {
   const settings = useSettings();

@@ -8,7 +8,7 @@ import {
   Image as ImageIcon,
   Loader2,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 type ProductInput = {
   id: number | null;

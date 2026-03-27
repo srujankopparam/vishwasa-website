@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function WhatsAppFAB() {
   let whatsappNumber = "918310236708";

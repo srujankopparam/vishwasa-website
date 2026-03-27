@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Navbar() {
   const settings = useSettings();

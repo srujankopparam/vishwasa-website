@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function ContactPage() {
   const settings = useSettings();
