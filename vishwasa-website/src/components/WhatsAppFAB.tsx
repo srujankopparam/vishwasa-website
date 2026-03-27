@@ -1,9 +1,15 @@
 "use client";
 
 import { useSettings } from "../context/SettingsContext";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppFAB() {
   const settings = useSettings();
+  const pathname = usePathname();
+
+  // Hide on all admin pages — FAB overlaps the admin sidebar Logout button
+  if (pathname.startsWith("/admin")) return null;
+
   const whatsappNumber = settings.whatsappNumber;
 
   const message = encodeURIComponent(
