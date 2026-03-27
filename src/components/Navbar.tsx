@@ -1,14 +1,17 @@
 "use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { Menu } from 'lucide-react';
-import { useSettings } from '@/context/SettingsContext';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Menu, X } from "lucide-react";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function Navbar() {
   const settings = useSettings();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <nav className="bg-cream border-b border-brown/10 sticky top-0 z-50">
+    <nav className="bg-cream border-b border-brown/10 sticky top-0 z-50 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -22,12 +25,20 @@ export default function Navbar() {
             <Link href="/contact" className="text-brown hover:text-orange transition-colors font-medium">Contact</Link>
           </div>
           <div className="md:hidden flex items-center">
-            <button className="text-brown p-2">
-              <Menu size={24} />
+            <button className="text-brown p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </div>
+      {mobileOpen && (
+        <div className="md:hidden absolute top-20 left-0 right-0 bg-cream border-b border-brown/10 shadow-md z-50 flex flex-col px-6 py-4 space-y-4">
+          <Link href="/" onClick={() => setMobileOpen(false)} className="text-brown font-medium">Home</Link>
+          <Link href="/products" onClick={() => setMobileOpen(false)} className="text-brown font-medium">Products</Link>
+          <Link href="/about" onClick={() => setMobileOpen(false)} className="text-brown font-medium">About</Link>
+          <Link href="/contact" onClick={() => setMobileOpen(false)} className="text-brown font-medium">Contact</Link>
+        </div>
+      )}
     </nav>
   );
 }
