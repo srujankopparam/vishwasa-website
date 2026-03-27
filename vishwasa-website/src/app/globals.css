@@ -29,6 +29,13 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
+  .glass-solid {
+    background: rgba(255, 252, 248, 0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
   .animate-fade-up {
     animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }

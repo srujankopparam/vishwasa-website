@@ -19,10 +19,10 @@ export default function Home() {
           <h1 className="font-serif text-6xl sm:text-8xl font-bold text-brown mb-8 tracking-tight whitespace-pre-wrap animate-fade-up">
             {settings.heroTitle}
           </h1>
-          <p className="text-xl sm:text-2xl text-brown/70 mb-12 max-w-3xl mx-auto whitespace-pre-wrap animate-fade-up [animation-delay:200ms] opacity-0 fill-mode-forwards">
+          <p className="text-xl sm:text-2xl text-brown/70 mb-12 max-w-3xl mx-auto whitespace-pre-wrap animate-fade-up [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
             {settings.heroSubtitle}
           </p>
-          <div className="flex justify-center gap-6 animate-fade-up [animation-delay:400ms] opacity-0 fill-mode-forwards">
+          <div className="flex justify-center gap-6 animate-fade-up [animation-delay:400ms] opacity-0 [animation-fill-mode:forwards]">
             <Link 
               href="/products" 
               className="bg-orange-gold hover:bg-brown-dark text-white font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 block"
@@ -44,7 +44,7 @@ export default function Home() {
             ].map((feature, i) => (
               <div 
                 key={i}
-                className="group flex flex-col items-center p-8 rounded-3xl hover:bg-cream-light transition-all duration-500 animate-fade-up [animation-delay:var(--delay)] opacity-0 fill-mode-forwards"
+                className="group flex flex-col items-center p-8 rounded-3xl hover:bg-cream-light transition-all duration-500 animate-fade-up [animation-delay:var(--delay)] opacity-0 [animation-fill-mode:forwards]"
                 style={{ "--delay": `${600 + i * 200}ms` } as any}
               >
                 <div className={`${feature.bg} w-20 h-20 rounded-2xl flex items-center justify-center mb-6 ${feature.color} group-hover:scale-110 transition-transform duration-500 shadow-sm`}>

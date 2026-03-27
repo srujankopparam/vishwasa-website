@@ -8,10 +8,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        "orange-gold": "#e67e22",
+        "cream-light": "#fffdfa",
         cream: "#ffe0b4",
         brown: {
           DEFAULT: "#874721",
           light: "#a45b2f",
+          dark: "#3a1c0b",
         },
         green: {
           DEFAULT: "#219348",
