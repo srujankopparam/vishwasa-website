@@ -25,7 +25,7 @@ export default function CartSidebar() {
   };
 
   const total = cart.reduce(
-    (sum, item) => sum + parsePrice(item.price) * item.quantity,
+    (sum: number, item: any) => sum + parsePrice(item.price) * item.quantity,
     0
   );
 
@@ -36,35 +36,36 @@ export default function CartSidebar() {
     }
 
     const whatsappNumber = settings.whatsappNumber;
-
-    let text = `${settings.checkoutGreeting}\n\n`;
-    cart.forEach((item) => {
-      text += `- ${item.quantity}x ${item.name} (${item.price})\n`;
+    let text = settings.checkoutGreeting + "\n\n";
+    cart.forEach((item: any) => {
+      text += "- " + item.quantity + "x " + item.name + " (" + item.price + ")\n";
     });
-    text += `\n*Grand Total: ₹${total}*\n`;
-    text += `\nMy Delivery Details:\nName: ${name}\nAddress: ${address}\n`;
+    text += "\n*Grand Total: \u20B9" + total + "*\n";
+    text += "\nMy Delivery Details:\nName: " + name + "\nAddress: " + address + "\n";
 
     const encodedText = encodeURIComponent(text);
     const cleanNumber = whatsappNumber.replace(/\D/g, "");
-    
-    // Use window.location.href for better mobile compatibility (avoiding popup blockers)
-    window.location.href = `https://wa.me/${cleanNumber}?text=${encodedText}`;
+    window.location.href = "https://wa.me/" + cleanNumber + "?text=" + encodedText;
     clearCart();
     setIsCartOpen(false);
   };
 
+  const overlayClass = isCartOpen
+    ? "fixed inset-0 bg-brown/20 z-[110] backdrop-blur-md transition-all duration-500 opacity-100"
+    : "fixed inset-0 bg-brown/20 z-[110] backdrop-blur-md transition-all duration-500 opacity-0 pointer-events-none";
+
+  const drawerClass = isCartOpen
+    ? "fixed inset-y-0 right-0 w-full max-w-md glass shadow-2xl z-[120] flex flex-col transition-all duration-500 ease-out transform translate-x-0"
+    : "fixed inset-y-0 right-0 w-full max-w-md glass shadow-2xl z-[120] flex flex-col transition-all duration-500 ease-out transform translate-x-full";
+
+  return (
+    <>
       <div
-        className={`fixed inset-0 bg-brown/20 z-[110] backdrop-blur-md transition-all duration-500 ${
-          isCartOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={overlayClass}
         onClick={() => setIsCartOpen(false)}
       />
 
-      <div 
-        className={`fixed inset-y-0 right-0 w-full max-w-md glass shadow-2xl z-[120] flex flex-col transition-all duration-500 ease-out transform ${
-          isCartOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
+      <div className={drawerClass}>
         <div className="flex items-center justify-between p-6 border-b border-brown/10">
           <h2 className="text-3xl font-serif font-bold text-brown flex items-center gap-3">
             <ShoppingBag className="text-orange-gold" /> Your Bag
@@ -86,8 +87,10 @@ export default function CartSidebar() {
               <p className="font-serif text-2xl font-bold text-brown/60 mb-2">
                 Your bag is empty
               </p>
-              <p className="max-w-[200px]">Looks like you haven't added any snacks yet!</p>
-              <button 
+              <p className="max-w-[200px]">
+                Looks like you haven&apos;t added any snacks yet!
+              </p>
+              <button
                 onClick={() => setIsCartOpen(false)}
                 className="mt-8 text-orange-gold font-bold hover:underline"
               >
@@ -96,10 +99,10 @@ export default function CartSidebar() {
             </div>
           ) : (
             <div className="space-y-4">
-              {cart.map((item, i) => (
+              {cart.map((item: any) => (
                 <div
                   key={item.id}
-                  className="flex gap-4 bg-white/50 p-4 rounded-2xl border border-brown/5 animate-fade-up style={{ '--delay': `${i * 100}ms` } as any}"
+                  className="flex gap-4 bg-white/50 p-4 rounded-2xl border border-brown/5 animate-fade-up"
                 >
                   <div className="w-24 h-24 bg-cream-light rounded-2xl overflow-hidden shrink-0 relative border border-brown/5">
                     {item.image_url ? (
@@ -166,13 +169,13 @@ export default function CartSidebar() {
                   type="text"
                   placeholder="Your Full Name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                   className="w-full bg-brown/5 border border-brown/10 rounded-xl px-4 py-3 text-brown placeholder:text-brown/40 focus:outline-none focus:border-orange-gold transition-all"
                 />
                 <textarea
                   placeholder="Full Delivery Address"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAddress(e.target.value)}
                   className="w-full bg-brown/5 border border-brown/10 rounded-xl px-4 py-3 text-brown placeholder:text-brown/40 h-24 resize-none focus:outline-none focus:border-orange-gold transition-all"
                 />
               </div>
@@ -183,7 +186,7 @@ export default function CartSidebar() {
 
             <div className="flex justify-between items-center mb-6 px-2">
               <span className="font-serif text-lg text-brown/60">Grand Total</span>
-              <span className="text-4xl font-bold text-brown">₹{total}</span>
+              <span className="text-4xl font-bold text-brown">{"\u20B9"}{total}</span>
             </div>
 
             <button
