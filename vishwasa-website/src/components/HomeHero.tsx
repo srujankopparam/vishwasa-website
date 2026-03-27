@@ -35,7 +35,7 @@ export default function HomeHero() {
           <div className="flex justify-center gap-6 animate-fade-up [animation-delay:400ms] opacity-0 [animation-fill-mode:forwards]">
             <Link
               href="/products"
-              className="bg-orange-gold hover:bg-brown-dark text-white font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 block"
+              className="bg-brown hover:bg-brown-dark text-white font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 block"
             >
               Shop Our Collection
             </Link>
