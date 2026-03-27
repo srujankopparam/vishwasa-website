@@ -19,8 +19,17 @@ export async function GET(request: Request) {
       );
     `;
     
+    // Creates the CMS settings key-value store
+    await sql`
+      CREATE TABLE IF NOT EXISTS website_settings (
+        key VARCHAR(255) PRIMARY KEY,
+        value TEXT,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    
     return NextResponse.json(
-      { message: 'Database Setup Successful! Products table created.', result },
+      { message: 'Database Setup Successful! Tables created.' },
       { status: 200 }
     );
   } catch (error) {
