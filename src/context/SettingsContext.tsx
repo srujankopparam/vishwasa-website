@@ -52,7 +52,7 @@ export function SettingsProvider({
   children: ReactNode;
   initialSettings: Partial<WebsiteSettings>;
 }) {
-  const mergedSettings = { ...defaultSettings, ...initialSettings };
+  const mergedSettings = { ...defaultSettings, ...initialSettings } as WebsiteSettings;
 
   return (
     <SettingsContext.Provider value={mergedSettings}>
