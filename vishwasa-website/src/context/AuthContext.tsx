@@ -36,12 +36,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
+        // Store the password as the token — it's used as Bearer token
+        // for authenticated API calls (settings, products, upload, setup).
+        // The password is already known to the admin user and is only
+        // sent over HTTPS to same-origin API routes.
         setToken(password);
         localStorage.setItem("admin_token", password);
         return true;
       }
     } catch (e) {
-      console.error(e);
+      console.error("Login failed:", e);
     }
     return false;
   };
@@ -53,7 +57,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ token, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider
+      value={{ token, isAuthenticated: !!token, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

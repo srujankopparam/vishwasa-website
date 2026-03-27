@@ -1,12 +1,22 @@
-import { sql } from '@vercel/postgres';
-import { NextResponse } from 'next/server';
+import { sql } from "@vercel/postgres";
+import { NextResponse } from "next/server";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+
+function isAuthenticated(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  const token = authHeader.split(" ")[1];
+  return token === process.env.ADMIN_PASSWORD;
+}
 
 export async function GET(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    // This creates the Products table if it doesn't already exist in the Postgres Database.
-    const result = await sql`
+    await sql`
       CREATE TABLE IF NOT EXISTS products (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -18,8 +28,7 @@ export async function GET(request: Request) {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    
-    // Creates the CMS settings key-value store
+
     await sql`
       CREATE TABLE IF NOT EXISTS website_settings (
         key VARCHAR(255) PRIMARY KEY,
@@ -27,14 +36,15 @@ export async function GET(request: Request) {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    
+
     return NextResponse.json(
-      { message: 'Database Setup Successful! Tables created.' },
+      { message: "Database Setup Successful! Tables created." },
       { status: 200 }
     );
   } catch (error) {
+    console.error("Setup failed:", error);
     return NextResponse.json(
-      { error: 'Failed to set up database', details: error },
+      { error: "Database setup failed" },
       { status: 500 }
     );
   }
