@@ -1,5 +1,5 @@
 import { sql } from "@vercel/postgres";
-import ProductCard from "@/components/ProductCard";
+import ProductList from "@/components/ProductList";
 
 export const dynamic = "force-dynamic";
 
@@ -15,34 +15,27 @@ export default async function ProductsPage() {
   }
 
   return (
-    <div className="py-16 bg-cream/30 min-h-screen">
+    <div className="relative pt-32 pb-24 bg-cream/30 min-h-screen overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-orange/5 to-transparent -z-10" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-orange/10 rounded-full blur-3xl -z-10 animate-pulse" />
+      <div className="absolute top-1/2 -left-24 w-72 h-72 bg-brown/5 rounded-full blur-3xl -z-10" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h1 className="font-serif text-4xl sm:text-5xl font-bold text-brown mb-4">
-            Our Traditional Snacks
+        <div className="text-center mb-16 animate-fade-up">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-orange/10 text-orange font-bold text-sm tracking-wider uppercase mb-4">
+            Our Collection
+          </span>
+          <h1 className="font-serif text-5xl sm:text-6xl font-bold text-brown mb-6 leading-tight">
+            Traditional <span className="text-orange italic">Snacks</span>
           </h1>
-          <p className="text-lg text-brown/70 max-w-2xl mx-auto">
-            Made fresh with pure butter, cold-pressed oils, and zero
-            preservatives.
+          <p className="text-xl text-brown/70 max-w-2xl mx-auto font-medium">
+            Discover the authentic taste of tradition. Made fresh with pure butter, 
+            cold-pressed oils, and zero preservatives.
           </p>
         </div>
 
-        {products.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-brown/10">
-            <h2 className="text-2xl font-serif text-brown mb-2">
-              Our menu is being updated!
-            </h2>
-            <p className="text-brown/70">
-              Check back soon for our fresh daily snacks.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
+        <ProductList initialProducts={products} />
       </div>
     </div>
   );
