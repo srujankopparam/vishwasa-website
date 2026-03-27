@@ -41,8 +41,8 @@ export default function ProductManager() {
     });
   }, [products, searchQuery, filterCategory]);
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to permanently delete this product?")) return;
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
 
     try {
       const res = await fetch(`/api/products?id=${id}`, {
@@ -197,7 +197,7 @@ export default function ProductManager() {
                       <span>Edit</span>
                     </button>
                     <button
-                      onClick={() => handleDelete(p.id)}
+                      onClick={() => handleDelete(p.id, p.name)}
                       className="bg-red-50/50 hover:bg-red-500 hover:text-white text-red-500 py-3.5 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all active:scale-95 border border-transparent hover:shadow-lg hover:shadow-red-500/20"
                     >
                       <Trash2 size={18} />

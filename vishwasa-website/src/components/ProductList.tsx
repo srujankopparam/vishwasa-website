@@ -2,8 +2,15 @@
 
 import { useState, useMemo } from "react";
 import ProductCard from "./ProductCard";
+import { useSettings } from "../context/SettingsContext";
 
-export default function ProductList({ initialProducts }: { initialProducts: any[] }) {
+interface ProductListProps {
+  initialProducts: any[];
+  initialError?: boolean;
+}
+
+export default function ProductList({ initialProducts, initialError }: ProductListProps) {
+  const settings = useSettings();
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = [
@@ -18,6 +25,27 @@ export default function ProductList({ initialProducts }: { initialProducts: any[
     return initialProducts.filter((p) => p.category === activeCategory);
   }, [activeCategory, initialProducts]);
 
+  if (initialError) {
+    return (
+      <div className="w-full bg-white/60 backdrop-blur-sm rounded-3xl border border-brown/10 p-12 text-center animate-fade-in">
+        <p className="text-2xl font-serif text-brown mb-3 opacity-70">
+          We're having trouble loading our products right now.
+        </p>
+        <p className="text-brown/50 mb-6">
+          Please try again in a moment or WhatsApp us directly to order.
+        </p>
+        <a
+          href={"https://wa.me/" + settings.whatsappNumber}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-green text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+        >
+          Order via WhatsApp
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-12">
       {/* Category Filter Pills */}
@@ -26,11 +54,11 @@ export default function ProductList({ initialProducts }: { initialProducts: any[
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
-            className={`px-6 py-2 rounded-full font-bold transition-all duration-300 border-2 ${
+            className={"px-6 py-2 rounded-full font-bold transition-all duration-300 border-2 " + (
               activeCategory === cat.id
                 ? "bg-orange border-orange text-white shadow-lg scale-105"
                 : "bg-white/50 border-brown/10 text-brown hover:border-orange/50 hover:bg-white"
-            }`}
+            )}
           >
             {cat.label}
           </button>
@@ -44,15 +72,15 @@ export default function ProductList({ initialProducts }: { initialProducts: any[
             No items in this category yet.
           </h2>
           <p className="text-brown/50">
-            We're currently preparing fresh batches. Stay tuned!
+            We&apos;re currently preparing fresh batches. Stay tuned!
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredProducts.map((product, idx) => (
-            <div 
-              key={product.id} 
-              className="animate-fade-up" 
+            <div
+              key={product.id}
+              className="animate-fade-up"
               style={{ animationDelay: `${idx * 50}ms` }}
             >
               <ProductCard product={product} />

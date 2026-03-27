@@ -5,12 +5,14 @@ export const dynamic = "force-dynamic";
 
 export default async function ProductsPage() {
   let products: any[] = [];
+  let initialError = false;
 
   try {
     const { rows } = await sql`SELECT * FROM products WHERE status = 'active' ORDER BY created_at DESC;`;
     products = rows;
   } catch (error) {
     console.warn("Could not load products:", error);
+    initialError = true;
     products = [];
   }
 
@@ -35,7 +37,7 @@ export default async function ProductsPage() {
           </p>
         </div>
 
-        <ProductList initialProducts={products} />
+        <ProductList initialProducts={products} initialError={initialError} />
       </div>
     </div>
   );

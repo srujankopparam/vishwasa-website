@@ -23,10 +23,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("admin_token");
-    if (storedToken) {
-      setToken(storedToken);
+    const expiry = localStorage.getItem("admin_token_expiry");
+    if (storedToken && expiry) {
+      if (Date.now() > parseInt(expiry, 10)) {
+        // Session expired — clear immediately
+        localStorage.removeItem("admin_token");
+        localStorage.removeItem("admin_token_expiry");
+        router.push("/admin/login");
+      } else {
+        setToken(storedToken);
+      }
     }
-  }, []);
+  }, [router]);
 
   const login = async (password: string) => {
     try {
@@ -42,6 +50,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // sent over HTTPS to same-origin API routes.
         setToken(password);
         localStorage.setItem("admin_token", password);
+        localStorage.setItem(
+          "admin_token_expiry",
+          String(Date.now() + 8 * 60 * 60 * 1000)
+        );
         return true;
       }
     } catch (e) {
@@ -53,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setToken(null);
     localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_token_expiry");
     router.push("/admin/login");
   };
 

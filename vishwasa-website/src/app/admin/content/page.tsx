@@ -8,6 +8,7 @@ export default function ContentEditor() {
   const [settingsData, setSettingsData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { token } = useAuth();
 
   const fetchSettings = useCallback(async () => {
@@ -26,7 +27,20 @@ export default function ContentEditor() {
     fetchSettings();
   }, [fetchSettings]);
 
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      window.onbeforeunload = () => "You have unsaved changes.";
+    } else {
+      window.onbeforeunload = null;
+    }
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [hasUnsavedChanges]);
+
   const handleSettingChange = (key: string, value: string) => {
+    setHasUnsavedChanges(true);
     setSettingsData((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -42,6 +56,7 @@ export default function ContentEditor() {
         body: JSON.stringify({ settings: settingsData }),
       });
       if (res.ok) {
+        setHasUnsavedChanges(false);
         alert("Website text updated live automatically!");
       } else {
         alert("Failed to save settings. Check authentication.");

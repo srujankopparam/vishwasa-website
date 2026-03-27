@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useSettings } from "../context/SettingsContext";
+import { useRouter } from "next/navigation";
+
+const MIN_ORDER = 240;
 
 export default function CartSidebar() {
   const {
     cart,
+    addToCart,
     removeFromCart,
     updateQuantity,
     isCartOpen,
@@ -16,8 +20,12 @@ export default function CartSidebar() {
     clearCart,
   } = useCart();
   const settings = useSettings();
+  const router = useRouter();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [minOrderWarning, setMinOrderWarning] = useState(false);
+  const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const [upsellLoading, setUpsellLoading] = useState(false);
 
   const parsePrice = (priceStr: string) => {
     const match = priceStr.match(/\d+/);
@@ -29,7 +37,31 @@ export default function CartSidebar() {
     0
   );
 
+  const cartIds = new Set(cart.map((item: any) => item.id));
+  const remaining = MIN_ORDER - total;
+  const belowMin = total < MIN_ORDER;
+
+  // Fetch upsell products when cart is open and below minimum
+  useEffect(() => {
+    if (!isCartOpen || cart.length === 0 || !belowMin) return;
+    setUpsellLoading(true);
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        const all: any[] = data.products || [];
+        setUpsellProducts(all.filter((p: any) => !cartIds.has(p.id)).slice(0, 10));
+      })
+      .catch(() => {/* fail silently */})
+      .finally(() => setUpsellLoading(false));
+  }, [isCartOpen, cart.length, belowMin]); // eslint-disable-line
+
   const handleCheckout = () => {
+    if (belowMin) {
+      setMinOrderWarning(true);
+      return;
+    }
+    setMinOrderWarning(false);
+
     if (!name.trim() || !address.trim()) {
       alert("Please enter your name and delivery address to continue.");
       return;
@@ -60,10 +92,7 @@ export default function CartSidebar() {
 
   return (
     <>
-      <div
-        className={overlayClass}
-        onClick={() => setIsCartOpen(false)}
-      />
+      <div className={overlayClass} onClick={() => setIsCartOpen(false)} />
 
       <div className={drawerClass}>
         <div className="flex items-center justify-between p-6 border-b border-brown/10">
@@ -87,14 +116,14 @@ export default function CartSidebar() {
               <p className="font-serif text-2xl font-bold text-brown/60 mb-2">
                 Your bag is empty
               </p>
-              <p className="max-w-[200px]">
-                Looks like you haven&apos;t added any snacks yet!
+              <p className="max-w-[200px] text-sm text-brown/50">
+                Add at least 2 packs to place an order (min. &#8377;240)
               </p>
               <button
-                onClick={() => setIsCartOpen(false)}
-                className="mt-8 text-orange-gold font-bold hover:underline"
+                onClick={() => { setIsCartOpen(false); router.push("/products"); }}
+                className="mt-8 text-orange font-bold hover:underline"
               >
-                Continue Shopping
+                Browse Snacks
               </button>
             </div>
           ) : (
@@ -157,12 +186,76 @@ export default function CartSidebar() {
                   </div>
                 </div>
               ))}
+
+              {/* Upsell Panel — shown when below MIN_ORDER */}
+              {belowMin && (
+                <div className="bg-orange/5 rounded-2xl border border-orange/20 p-4">
+                  <p className="font-bold text-brown text-sm mb-3">
+                    Pick one more to unlock checkout
+                  </p>
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {upsellLoading
+                      ? [0, 1, 2].map((i) => (
+                          <div
+                            key={i}
+                            className="shrink-0 w-32 h-20 bg-brown/5 rounded-xl animate-pulse"
+                          />
+                        ))
+                      : upsellProducts.map((p: any) => (
+                          <div
+                            key={p.id}
+                            className="shrink-0 flex flex-col items-center bg-white rounded-xl p-2 shadow-sm border border-brown/5 w-28"
+                          >
+                            <div className="relative w-12 h-12 mb-1 rounded-lg overflow-hidden bg-cream-light">
+                              {p.image_url ? (
+                                <Image
+                                  src={p.image_url}
+                                  alt={p.name}
+                                  fill
+                                  sizes="48px"
+                                  className="object-contain p-1"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-xl">🍪</div>
+                              )}
+                            </div>
+                            <p className="text-[10px] font-bold text-brown text-center line-clamp-2 leading-tight mb-1">
+                              {p.name}
+                            </p>
+                            <p className="text-[10px] text-orange font-bold mb-2">
+                              &#8377;{p.price}
+                            </p>
+                            <button
+                              onClick={() =>
+                                addToCart({
+                                  id: p.id,
+                                  name: p.name,
+                                  price: p.price,
+                                  image_url: p.image_url,
+                                })
+                              }
+                              className="bg-orange text-white text-xs font-bold px-3 py-1 rounded-full hover:bg-orange-light transition-colors"
+                            >
+                              + Add
+                            </button>
+                          </div>
+                        ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {cart.length > 0 && (
           <div className="glass-solid p-6 border-t border-brown/10 shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
+            {/* Minimum order warning */}
+            {(belowMin || minOrderWarning) && (
+              <div className="bg-orange/10 border border-orange/30 rounded-xl px-4 py-2 mb-4 text-sm text-brown font-semibold text-center">
+                Minimum order is &#8377;240. Add &#8377;{remaining} more to checkout.
+              </div>
+            )}
+
             <div className="mb-6 space-y-4">
               <div className="flex flex-col gap-3">
                 <input
@@ -186,18 +279,27 @@ export default function CartSidebar() {
 
             <div className="flex justify-between items-center mb-6 px-2">
               <span className="font-serif text-lg text-brown/60">Grand Total</span>
-              <span className="text-4xl font-bold text-brown">{"\u20B9"}{total}</span>
+              <span className="text-4xl font-bold text-brown">&#8377;{total}</span>
             </div>
 
-            <button
-              onClick={handleCheckout}
-              className="w-full bg-orange hover:bg-brown-dark text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 text-xl"
-            >
-              <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-              </svg>
-              Chat on WhatsApp to Order
-            </button>
+            {belowMin ? (
+              <button
+                disabled
+                className="w-full bg-brown/20 text-brown/50 py-5 rounded-2xl font-bold flex items-center justify-center gap-3 cursor-not-allowed text-base"
+              >
+                Add &#8377;{remaining} more to order
+              </button>
+            ) : (
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-orange hover:bg-brown-dark text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 text-xl"
+              >
+                <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                </svg>
+                Chat on WhatsApp to Order
+              </button>
+            )}
           </div>
         )}
       </div>
