@@ -72,7 +72,8 @@ export default function CartSidebar() {
                 <div key={item.id} className="flex gap-4 bg-white p-3 rounded-xl shadow-sm border border-brown/10">
                   <div className="w-20 h-20 bg-cream rounded-lg overflow-hidden shrink-0 relative border border-brown/5">
                     {item.image_url ? (
-                      <Image src={item.image_url} alt={item.name} fill className="object-cover" />
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-3xl">🍪</div>
                     )}

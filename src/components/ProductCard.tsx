@@ -31,10 +31,11 @@ export default function ProductCard({ product }: { product: ProductInput }) {
     <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-brown/10 flex flex-col hover:shadow-xl transition-shadow group">
       <div className="relative h-64 bg-cream overflow-hidden">
         {product.image_url ? (
-           <Image
+           /* eslint-disable-next-line @next/next/no-img-element */
+           <img
              src={product.image_url}
              alt={product.name}
-             fill className="object-cover group-hover:scale-105 transition-transform duration-500"
+             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
            />
         ) : (
            <div className="w-full h-full flex items-center justify-center text-6xl">🍪</div>
