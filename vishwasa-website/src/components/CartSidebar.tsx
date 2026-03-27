@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function CartSidebar() {
   const { cart, removeFromCart, updateQuantity, isCartOpen, setIsCartOpen, clearCart } = useCart();
+  const settings = useSettings();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
 
@@ -23,9 +25,9 @@ export default function CartSidebar() {
       return;
     }
 
-    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918310236708"; 
+    const whatsappNumber = settings.whatsappNumber; 
     
-    let text = `Hi Vishwasa, I would like to place an order:\n\n`;
+    let text = `${settings.checkoutGreeting}\n\n`;
     cart.forEach(item => {
       text += `- ${item.quantity}x ${item.name} (${item.price})\n`;
     });
@@ -100,7 +102,7 @@ export default function CartSidebar() {
         {cart.length > 0 && (
           <div className="border-t-2 border-brown/10 bg-white p-6 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
              <div className="mb-4 space-y-3">
-               <label className="font-bold text-brown mb-2 text-sm uppercase tracking-wider block">Delivery Details required</label>
+               <label className="font-bold text-brown mb-2 text-sm uppercase tracking-wider block">{settings.deliveryWarning}</label>
                <input 
                  type="text" 
                  placeholder="Your Full Name" 

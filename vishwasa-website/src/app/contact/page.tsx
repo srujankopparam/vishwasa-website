@@ -1,6 +1,10 @@
+"use client";
+
 import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function ContactPage() {
+  const settings = useSettings();
   return (
     <div className="py-16 bg-cream/20 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,8 +45,8 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-bold text-xl text-brown mb-2">WhatsApp Us</h3>
                 <p className="text-brown/70 mb-4">Fastest way to order or ask questions.</p>
-                <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918310236708"}`} target="_blank" rel="noopener noreferrer" className="text-green font-bold hover:underline">
-                  +{process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918310236708"}
+                <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="text-green font-bold hover:underline">
+                  +{settings.whatsappNumber}
                 </a>
               </div>
             </div>
@@ -53,10 +57,8 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-bold text-xl text-brown mb-2">Our Kitchen</h3>
-                <p className="text-brown/70">
-                  Vishwasa Foods<br />
-                  123 Traditional Street, J.P. Nagar<br />
-                  Bengaluru, Karnataka 560078
+                <p className="text-brown/70 whitespace-pre-wrap">
+                  {settings.contactAddress}
                 </p>
               </div>
             </div>
@@ -68,7 +70,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-bold text-xl text-brown mb-2">Email Us</h3>
                 <p className="text-brown/70">
-                  hello@vishwasa.com
+                  {settings.contactEmail}
                 </p>
               </div>
             </div>

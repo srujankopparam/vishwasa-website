@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import CartFAB from "@/components/CartFAB";
 import CartSidebar from "@/components/CartSidebar";
 import { CartProvider } from "@/context/CartContext";
+import { SettingsProvider } from "@/context/SettingsContext";
+import { sql } from "@vercel/postgres";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -15,21 +17,35 @@ export const metadata: Metadata = {
   description: "Mother's Trust, Nature's Best. Traditional recipes made with better ingredients, no palm oil, and cold-pressed oils.",
 };
 
-export default function RootLayout({
+export const dynamic = 'force-dynamic';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+  // Extract global settings instantaneously on the server
+  let initialSettings = {};
+  try {
+    const { rows } = await sql`SELECT key, value FROM website_settings;`;
+    initialSettings = rows.reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
+  } catch (error) {
+    console.error("Failed to fetch settings from DB, falling back to defaults.", error);
+  }
+
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased min-h-screen flex flex-col relative`}>
-        <CartProvider>
-          <Navbar />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-          <CartFAB />
-          <CartSidebar />
-        </CartProvider>
+        <SettingsProvider initialSettings={initialSettings}>
+          <CartProvider>
+            <Navbar />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+            <CartFAB />
+            <CartSidebar />
+          </CartProvider>
+        </SettingsProvider>
       </body>
     </html>
   );
