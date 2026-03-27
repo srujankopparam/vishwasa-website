@@ -45,10 +45,10 @@ export default function CartSidebar() {
     text += `\nMy Delivery Details:\nName: ${name}\nAddress: ${address}\n`;
 
     const encodedText = encodeURIComponent(text);
-    window.open(
-      `https://wa.me/${whatsappNumber}?text=${encodedText}`,
-      "_blank"
-    );
+    const cleanNumber = whatsappNumber.replace(/\D/g, "");
+    
+    // Use window.location.href for better mobile compatibility (avoiding popup blockers)
+    window.location.href = `https://wa.me/${cleanNumber}?text=${encodedText}`;
     clearCart();
     setIsCartOpen(false);
   };
