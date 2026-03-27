@@ -8,7 +8,7 @@ import {
   Image as ImageIcon,
   Loader2,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 type ProductInput = {
   id: number | null;
@@ -18,6 +18,7 @@ type ProductInput = {
   image_url: string;
   highlights: string;
   status: string;
+  category: string;
 };
 
 export default function ProductForm({
@@ -38,6 +39,7 @@ export default function ProductForm({
       image_url: "",
       highlights: "",
       status: "active",
+      category: "savories",
     }
   );
   const [isDragging, setIsDragging] = useState(false);
@@ -181,10 +183,26 @@ export default function ProductForm({
             </div>
             <div>
               <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Category
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none bg-white font-medium"
+              >
+                <option value="savories">Savories (Snacks)</option>
+                <option value="sweets">Sweets</option>
+                <option value="limited">Limited Edition</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
                 Description
               </label>
               <textarea
-                rows={4}
+                rows={3}
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })

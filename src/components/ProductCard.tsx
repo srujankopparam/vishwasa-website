@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { Plus } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import Image from "next/image";
 
 type ProductInput = {
@@ -15,6 +16,7 @@ type ProductInput = {
 
 export default function ProductCard({ product }: { product: ProductInput }) {
   const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
 
   const handleAddToCart = () => {
     addToCart({
@@ -23,6 +25,8 @@ export default function ProductCard({ product }: { product: ProductInput }) {
       price: product.price,
       image_url: product.image_url,
     });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
   };
 
   const highlights = product.highlights ? product.highlights.split(",") : [];
@@ -74,9 +78,23 @@ export default function ProductCard({ product }: { product: ProductInput }) {
 
         <button
           onClick={handleAddToCart}
-          className="w-full bg-[#128C7E] hover:bg-[#075E54] text-white py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 group-hover:shadow-md"
+          className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all duration-300 ${
+            added 
+              ? "bg-green-600 text-white" 
+              : "bg-teal-700 hover:bg-brown-dark text-white shadow-lg hover:shadow-teal-700/20"
+          }`}
         >
-          <Plus size={20} /> Add to Cart
+          {added ? (
+            <>
+              <Check size={20} />
+              Added!
+            </>
+          ) : (
+            <>
+              <Plus size={20} />
+              Add to Cart
+            </>
+          )}
         </button>
       </div>
     </div>

@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, description, price, image_url, highlights, status } = body;
+    const { name, description, price, image_url, highlights, status, category } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -40,8 +40,8 @@ export async function POST(request: Request) {
     }
 
     const { rows } = await sql`
-      INSERT INTO products (name, description, price, image_url, highlights, status)
-      VALUES (${name}, ${description || ""}, ${price || ""}, ${image_url || ""}, ${highlights || ""}, ${status || "active"})
+      INSERT INTO products (name, description, price, image_url, highlights, status, category)
+      VALUES (${name}, ${description || ""}, ${price || ""}, ${image_url || ""}, ${highlights || ""}, ${status || "active"}, ${category || "savories"})
       RETURNING *;
     `;
 
@@ -92,7 +92,7 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, name, description, price, image_url, highlights, status } = body;
+    const { id, name, description, price, image_url, highlights, status, category } = body;
 
     if (!id || !name) {
       return NextResponse.json(
@@ -109,7 +109,8 @@ export async function PUT(request: Request) {
         price = ${price || ""},
         image_url = ${image_url || ""},
         highlights = ${highlights || ""},
-        status = ${status || "active"}
+        status = ${status || "active"},
+        category = ${category || "savories"}
       WHERE id = ${id}
       RETURNING *;
     `;

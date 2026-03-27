@@ -1,44 +1,94 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Navbar() {
   const settings = useSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="bg-cream border-b border-brown/10 sticky top-0 z-50 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Image src="/logo.png" alt="Vishwasa Logo" width={40} height={40} className="object-contain" />
-            <span className="font-serif text-3xl font-bold text-brown tracking-tight">{settings.brandName}</span>
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+        scrolled 
+          ? "glass h-16 shadow-md" 
+          : "bg-transparent h-20"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex justify-between items-center h-full">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Image 
+              src="/logo.png" 
+              alt="Vishwasa Logo" 
+              width={scrolled ? 32 : 40} 
+              height={scrolled ? 32 : 40} 
+              className="object-contain transition-all duration-300" 
+            />
+            <span className={`font-serif font-bold text-brown tracking-tight transition-all duration-300 ${
+              scrolled ? "text-xl" : "text-3xl"
+            }`}>
+              {settings.brandName}
+            </span>
           </Link>
-          <div className="hidden md:flex space-x-8">
-            <Link href="/" className="text-brown hover:text-orange transition-colors font-medium">Home</Link>
-            <Link href="/products" className="text-brown hover:text-orange transition-colors font-medium">Products</Link>
-            <Link href="/about" className="text-brown hover:text-orange transition-colors font-medium">About</Link>
-            <Link href="/contact" className="text-brown hover:text-orange transition-colors font-medium">Contact</Link>
+          
+          <div className="hidden md:flex items-center space-x-8">
+            {["Home", "Products", "About", "Contact"].map((item) => (
+              <Link 
+                key={item}
+                href={item === "Home" ? "/" : `/${item.toLowerCase()}`} 
+                className={`text-brown hover:text-orange-gold transition-colors font-semibold relative group ${
+                  scrolled ? "text-sm" : "text-base"
+                }`}
+              >
+                {item}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-gold transition-all duration-300 group-hover:w-full" />
+              </Link>
+            ))}
           </div>
+
           <div className="md:hidden flex items-center">
-            <button className="text-brown p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+            <button 
+              className="text-brown p-2 hover:bg-brown/5 rounded-full transition-colors" 
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </div>
-      {mobileOpen && (
-        <div className="md:hidden absolute top-20 left-0 right-0 bg-cream border-b border-brown/10 shadow-md z-50 flex flex-col px-6 py-4 space-y-4">
-          <Link href="/" onClick={() => setMobileOpen(false)} className="text-brown font-medium">Home</Link>
-          <Link href="/products" onClick={() => setMobileOpen(false)} className="text-brown font-medium">Products</Link>
-          <Link href="/about" onClick={() => setMobileOpen(false)} className="text-brown font-medium">About</Link>
-          <Link href="/contact" onClick={() => setMobileOpen(false)} className="text-brown font-medium">Contact</Link>
+
+      {/* Mobile Menu */}
+      <div 
+        className={`md:hidden absolute top-full left-0 right-0 glass shadow-2xl transition-all duration-300 overflow-hidden ${
+          mobileOpen ? "max-h-[300px] border-t border-brown/10" : "max-h-0"
+        }`}
+      >
+        <div className="flex flex-col px-6 py-8 space-y-6">
+          {["Home", "Products", "About", "Contact"].map((item) => (
+            <Link 
+              key={item}
+              href={item === "Home" ? "/" : `/${item.toLowerCase()}`} 
+              onClick={() => setMobileOpen(false)} 
+              className="text-brown font-bold text-lg hover:text-orange-gold transition-colors"
+            >
+              {item}
+            </Link>
+          ))}
         </div>
-      )}
+      </div>
     </nav>
   );
 }

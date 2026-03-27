@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Globe, Save } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function ContentEditor() {
   const [settingsData, setSettingsData] = useState<Record<string, string>>({});
@@ -60,31 +60,22 @@ export default function ContentEditor() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-serif font-bold text-brown">
-            Content Editor
+    <div className="space-y-10 pb-32">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-fade-up">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-serif font-bold text-brown tracking-tight">
+            Site <span className="text-orange">Content</span>
           </h1>
-          <p className="text-brown/70 mt-1">
-            Edit all visible text across the website.
+          <p className="text-brown/50 font-medium">
+            Manage your brand identity and website copy in real-time.
           </p>
         </div>
-        <button
-          onClick={handleSettingsSave}
-          disabled={saving}
-          className="bg-orange hover:bg-orange-light text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all disabled:opacity-50"
-        >
-          {saving ? (
-            <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
-          ) : (
-            <Save size={20} />
-          )}
-          {saving ? "Saving..." : "Save & Push Live"}
-        </button>
+        <div className="hidden md:block">
+           <SaveButton onClick={handleSettingsSave} saving={saving} />
+        </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="grid grid-cols-1 gap-10 animate-fade-up" style={{ animationDelay: '100ms' }}>
         {/* Global Settings */}
         <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
           <h2 className="text-xl font-bold mb-4 font-serif text-brown flex items-center gap-2">
@@ -373,6 +364,34 @@ export default function ContentEditor() {
           </div>
         </section>
       </div>
+
+      {/* Sticky Save Bar for Mobile/Bottom */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-50 md:bottom-12">
+        <div className="bg-white/80 backdrop-blur-xl border border-brown/10 p-4 rounded-3xl shadow-2xl flex items-center justify-between gap-6">
+          <div className="hidden sm:block">
+            <p className="text-xs font-bold text-brown/40 uppercase tracking-widest">Unsaved Changes</p>
+            <p className="text-sm font-semibold text-brown/80">Site Content Editor</p>
+          </div>
+          <SaveButton onClick={handleSettingsSave} saving={saving} full />
+        </div>
+      </div>
     </div>
+  );
+}
+
+function SaveButton({ onClick, saving, full }: { onClick: () => void; saving: boolean; full?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={saving}
+      className={`${full ? 'w-full sm:w-auto' : ''} bg-orange hover:bg-orange-light text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-orange/20 transition-all active:scale-95 disabled:opacity-50 group font-serif`}
+    >
+      {saving ? (
+        <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
+      ) : (
+        <Save size={20} className="group-hover:rotate-12 transition-transform" />
+      )}
+      <span>{saving ? "Publishing..." : "Save & Push Live"}</span>
+    </button>
   );
 }

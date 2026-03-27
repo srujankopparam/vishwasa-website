@@ -1,13 +1,13 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Bell } from "lucide-react";
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -23,6 +23,11 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     }
   }, [mounted, isAuthenticated, pathname, router]);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   if (!mounted) return <div className="min-h-screen bg-cream"></div>;
 
   if (pathname === "/admin/login") {
@@ -32,37 +37,48 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   if (!isAuthenticated) return null;
 
   return (
-    <div className="flex min-h-screen bg-cream relative">
+    <div className="flex min-h-screen bg-[#FDFCFB] relative overflow-hidden">
+      {/* Desktop Sidebar */}
       <Sidebar />
       
       {/* Mobile Top Bar */}
-      <div className="md:hidden absolute top-0 left-0 right-0 h-16 bg-white border-b border-brown/10 px-4 flex items-center justify-between z-40">
-        <span className="font-serif font-bold text-xl text-brown">Admin Panel</span>
-        <button onClick={() => setMobileMenuOpen(true)} className="text-brown">
-          <Menu size={24} />
+      <div className="md:hidden fixed top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-md border-b border-brown/5 px-6 flex items-center justify-between z-[60]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange/10 rounded-xl flex items-center justify-center p-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+          </div>
+          <span className="font-serif font-bold text-lg text-brown tracking-tight">Vishwasa</span>
+        </div>
+        <button 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+          className="text-brown bg-cream/50 p-2.5 rounded-xl border border-brown/5 shadow-sm active:scale-95 transition-all"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/50 flex">
-          <div className="w-64 bg-white h-full relative">
-            <button 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="absolute top-4 right-4 text-brown p-2"
-            >
-              <X size={20} />
-            </button>
-            <div className="pt-16">
-               {/* Reuse sidebar UI for mobile, wrapped slightly to allow the close button */}
-               <div className="absolute inset-0 top-16"><Sidebar /></div>
+        <div className="md:hidden fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+          <div className="w-72 bg-white h-full shadow-2xl animate-in slide-in-from-left duration-300">
+            <div className="h-full pt-20">
+               <Sidebar />
             </div>
           </div>
+          <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
         </div>
       )}
 
-      <main className="flex-1 md:h-screen md:overflow-y-auto pt-16 md:pt-0">
-        {children}
+      {/* Main Content Area */}
+      <main className="flex-1 min-h-screen md:h-screen md:overflow-y-auto pt-24 md:pt-0 relative">
+        {/* Subtle Decorative Background */}
+        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-orange/[0.02] rounded-full blur-[120px] -z-10" />
+        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-brown/[0.02] rounded-full blur-[120px] -z-10" />
+        
+        <div className="p-4 md:p-10 max-w-6xl mx-auto">
+          {children}
+        </div>
       </main>
     </div>
   );
