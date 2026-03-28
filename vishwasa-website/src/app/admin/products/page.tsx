@@ -132,9 +132,9 @@ export default function ProductManager() {
                 className="flex-1 md:w-48 bg-cream/50 border border-brown/5 rounded-2xl py-3 px-4 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange/20 transition-all text-brown font-semibold"
               >
                 <option value="All">All Categories</option>
-                <option value="Savories">Savories</option>
-                <option value="Sweets">Sweets</option>
-                <option value="Limited Edition">Limited Edition</option>
+                <option value="savories">Savories</option>
+                <option value="sweets">Sweets</option>
+                <option value="limited">Limited Edition</option>
               </select>
             </div>
           </div>
@@ -165,8 +165,8 @@ export default function ProductManager() {
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl grayscale opacity-30">
-                      🍪
+                    <div className="w-full h-full flex items-center justify-center text-5xl text-brown/20">
+                      <Package size={64} strokeWidth={1} />
                     </div>
                   )}
                   <div className="absolute top-4 left-4 flex flex-col gap-2">

@@ -16,6 +16,7 @@ export default function AboutPage() {
           </p>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-12">
           {[
             { icon: Heart, title: settings.aboutFeature1Title || "Made with Love", desc: settings.aboutFeature1Desc || "Every snack is crafted with care using age-old family recipes." },
             { icon: ShieldCheck, title: settings.aboutFeature2Title || "No Compromise", desc: settings.aboutFeature2Desc || "Zero preservatives, zero palm oil. Only the purest ingredients." },
@@ -29,6 +30,8 @@ export default function AboutPage() {
               <p className="text-brown/80 whitespace-pre-wrap">{desc}</p>
             </div>
           ))}
+        </div>
+
       </div>
     </div>
   );

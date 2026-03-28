@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, Package } from "lucide-react";
 import Image from "next/image";
 
 type ProductInput = {
@@ -43,8 +43,8 @@ export default function ProductCard({ product }: { product: ProductInput }) {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl">
-            🍪
+          <div className="w-full h-full flex items-center justify-center text-6xl text-brown/20">
+            <Package size={64} strokeWidth={1} />
           </div>
         )}
         <div className="absolute top-4 right-4 bg-orange text-white px-3 py-1 rounded-full font-bold shadow-md">
@@ -81,7 +81,7 @@ export default function ProductCard({ product }: { product: ProductInput }) {
           className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all duration-300 ${
             added 
               ? "bg-green-600 text-white" 
-              : "bg-teal-700 hover:bg-brown-dark text-white shadow-lg hover:shadow-teal-700/20"
+              : "bg-orange hover:bg-orange-light text-white shadow-lg"
           }`}
         >
           {added ? (
@@ -100,3 +100,4 @@ export default function ProductCard({ product }: { product: ProductInput }) {
     </div>
   );
 }
+

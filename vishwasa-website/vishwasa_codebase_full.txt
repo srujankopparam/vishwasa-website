@@ -1,0 +1,3289 @@
+﻿--- FILE: public\put_logo_here.txt ---
+Please drop your logo.png file directly into this folder!
+
+
+
+--- FILE: src\app\about\page.tsx ---
+"use client";
+
+import { Target, Heart, ShieldCheck } from "lucide-react";
+import { useSettings } from "../../context/SettingsContext";
+
+export default function AboutPage() {
+  const settings = useSettings();
+
+  return (
+    <div className="py-16 bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center mb-16">
+          <h1 className="font-serif text-4xl sm:text-5xl font-bold text-brown mb-6">{settings.aboutTitle}</h1>
+          <p className="text-xl text-brown/80 leading-relaxed whitespace-pre-wrap">
+            {settings.aboutText}
+          </p>
+        </div>
+
+          {[
+            { icon: Heart, title: settings.aboutFeature1Title || "Made with Love", desc: settings.aboutFeature1Desc || "Every snack is crafted with care using age-old family recipes." },
+            { icon: ShieldCheck, title: settings.aboutFeature2Title || "No Compromise", desc: settings.aboutFeature2Desc || "Zero preservatives, zero palm oil. Only the purest ingredients." },
+            { icon: Target, title: settings.aboutFeature3Title || "Authentic Taste", desc: settings.aboutFeature3Desc || "True to traditional South Indian flavours, straight from our kitchen." },
+          ].map(({ icon: Icon, title, desc }, i) => (
+            <div key={i} className="text-center">
+              <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brown">
+                <Icon size={40} />
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-brown mb-4">{title}</h3>
+              <p className="text-brown/80 whitespace-pre-wrap">{desc}</p>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+}
+
+
+
+--- FILE: src\app\admin\content\page.tsx ---
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Globe, Save } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
+
+export default function ContentEditor() {
+  const [settingsData, setSettingsData] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const { token } = useAuth();
+
+  const fetchSettings = useCallback(async () => {
+    try {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+      setSettingsData(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      window.onbeforeunload = () => "You have unsaved changes.";
+    } else {
+      window.onbeforeunload = null;
+    }
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [hasUnsavedChanges]);
+
+  const handleSettingChange = (key: string, value: string) => {
+    setHasUnsavedChanges(true);
+    setSettingsData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSettingsSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ settings: settingsData }),
+      });
+      if (res.ok) {
+        setHasUnsavedChanges(false);
+        alert("Website text updated live automatically!");
+      } else {
+        alert("Failed to save settings. Check authentication.");
+      }
+    } catch (err) {
+      alert("Error saving settings.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-8 animate-pulse text-brown/50">Loading editor...</div>
+    );
+  }
+
+  return (
+    <div className="space-y-10 pb-32">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-fade-up">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-serif font-bold text-brown tracking-tight">
+            Site <span className="text-orange">Content</span>
+          </h1>
+          <p className="text-brown/50 font-medium">
+            Manage your brand identity and website copy in real-time.
+          </p>
+        </div>
+        <div className="hidden md:block">
+           <SaveButton onClick={handleSettingsSave} saving={saving} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-10 animate-fade-up" style={{ animationDelay: '100ms' }}>
+        {/* Global Settings */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown flex items-center gap-2">
+            <Globe size={20} className="text-orange" /> Global & Contact
+          </h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Brand Name
+              </label>
+              <input
+                value={settingsData.brandName || "Vishwasa Foods"}
+                onChange={(e) =>
+                  handleSettingChange("brandName", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                WhatsApp Number
+              </label>
+              <input
+                value={settingsData.whatsappNumber || ""}
+                onChange={(e) =>
+                  handleSettingChange("whatsappNumber", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                placeholder="e.g. 919876543210"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Contact Email
+              </label>
+              <input
+                value={settingsData.contactEmail || ""}
+                onChange={(e) =>
+                  handleSettingChange("contactEmail", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Physical Address
+              </label>
+              <textarea
+                rows={2}
+                value={settingsData.contactAddress || ""}
+                onChange={(e) =>
+                  handleSettingChange("contactAddress", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Homepage Hero */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            Home Page Hero
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Hero Title
+              </label>
+              <input
+                value={
+                  settingsData.heroTitle || "Mother's Trust, Nature's Best"
+                }
+                onChange={(e) =>
+                  handleSettingChange("heroTitle", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange text-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Hero Subtitle
+              </label>
+              <textarea
+                rows={2}
+                value={
+                  settingsData.heroSubtitle ||
+                  "Traditional South Indian snacks made with uncompromising quality. No palm oil, just pure butter and cold-pressed oils."
+                }
+                onChange={(e) =>
+                  handleSettingChange("heroSubtitle", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Trust Elements */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            Trust Elements (Features)
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <h3 className="font-bold text-brown">Feature 1</h3>
+              <input
+                value={settingsData.feature1Title || "No Palm Oil"}
+                onChange={(e) =>
+                  handleSettingChange("feature1Title", e.target.value)
+                }
+                placeholder="Title"
+                className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+              <textarea
+                rows={3}
+                value={
+                  settingsData.feature1Desc ||
+                  "Absolutely zero palm oil in any of our products."
+                }
+                onChange={(e) =>
+                  handleSettingChange("feature1Desc", e.target.value)
+                }
+                placeholder="Description"
+                className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+            <div className="space-y-3">
+              <h3 className="font-bold text-brown">Feature 2</h3>
+              <input
+                value={settingsData.feature2Title || "Cold Pressed Oils"}
+                onChange={(e) =>
+                  handleSettingChange("feature2Title", e.target.value)
+                }
+                placeholder="Title"
+                className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+              <textarea
+                rows={3}
+                value={
+                  settingsData.feature2Desc ||
+                  "Made exclusively using groundnut and sesame cold pressed oils."
+                }
+                onChange={(e) =>
+                  handleSettingChange("feature2Desc", e.target.value)
+                }
+                placeholder="Description"
+                className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+            <div className="space-y-3">
+              <h3 className="font-bold text-brown">Feature 3</h3>
+              <input
+                value={settingsData.feature3Title || "Butter Based"}
+                onChange={(e) =>
+                  handleSettingChange("feature3Title", e.target.value)
+                }
+                placeholder="Title"
+                className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+              <textarea
+                rows={3}
+                value={
+                  settingsData.feature3Desc ||
+                  "Authentic recipes made rich and melt-in-mouth with pure butter."
+                }
+                onChange={(e) =>
+                  handleSettingChange("feature3Desc", e.target.value)
+                }
+                placeholder="Description"
+                className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            Footer
+          </h2>
+          <div>
+            <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+              Footer About Text
+            </label>
+            <textarea
+              rows={3}
+              value={settingsData.footerAbout || ""}
+              onChange={(e) =>
+                handleSettingChange("footerAbout", e.target.value)
+              }
+              className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              placeholder="Short blurb about the company for the footer..."
+            />
+          </div>
+        </section>
+
+        {/* About Page */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            About Page
+          </h2>
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                About Title
+              </label>
+              <input
+                value={settingsData.aboutTitle || "Our Story"}
+                onChange={(e) =>
+                  handleSettingChange("aboutTitle", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange text-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                About Paragraph
+              </label>
+              <textarea
+                rows={4}
+                value={settingsData.aboutText || ""}
+                onChange={(e) =>
+                  handleSettingChange("aboutText", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 pt-4 border-t border-brown/10">
+              <div className="space-y-3">
+                <h3 className="font-bold text-brown">Feature 1</h3>
+                <input
+                  value={settingsData.aboutFeature1Title || "Made with Love"}
+                  onChange={(e) =>
+                    handleSettingChange("aboutFeature1Title", e.target.value)
+                  }
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+                <textarea
+                  rows={3}
+                  value={settingsData.aboutFeature1Desc || ""}
+                  onChange={(e) =>
+                    handleSettingChange("aboutFeature1Desc", e.target.value)
+                  }
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-bold text-brown">Feature 2</h3>
+                <input
+                  value={settingsData.aboutFeature2Title || "No Compromise"}
+                  onChange={(e) =>
+                    handleSettingChange("aboutFeature2Title", e.target.value)
+                  }
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+                <textarea
+                  rows={3}
+                  value={settingsData.aboutFeature2Desc || ""}
+                  onChange={(e) =>
+                    handleSettingChange("aboutFeature2Desc", e.target.value)
+                  }
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-bold text-brown">Feature 3</h3>
+                <input
+                  value={settingsData.aboutFeature3Title || "Authentic Taste"}
+                  onChange={(e) =>
+                    handleSettingChange("aboutFeature3Title", e.target.value)
+                  }
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+                <textarea
+                  rows={3}
+                  value={settingsData.aboutFeature3Desc || ""}
+                  onChange={(e) =>
+                    handleSettingChange("aboutFeature3Desc", e.target.value)
+                  }
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Sticky Save Bar for Mobile/Bottom */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-50 md:bottom-12">
+        <div className="bg-white/80 backdrop-blur-xl border border-brown/10 p-4 rounded-3xl shadow-2xl flex items-center justify-between gap-6">
+          <div className="hidden sm:block">
+            <p className="text-xs font-bold text-brown/40 uppercase tracking-widest">Unsaved Changes</p>
+            <p className="text-sm font-semibold text-brown/80">Site Content Editor</p>
+          </div>
+          <SaveButton onClick={handleSettingsSave} saving={saving} full />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SaveButton({ onClick, saving, full }: { onClick: () => void; saving: boolean; full?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={saving}
+      className={`${full ? 'w-full sm:w-auto' : ''} bg-orange hover:bg-orange-light text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-orange/20 transition-all active:scale-95 disabled:opacity-50 group font-serif`}
+    >
+      {saving ? (
+        <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
+      ) : (
+        <Save size={20} className="group-hover:rotate-12 transition-transform" />
+      )}
+      <span>{saving ? "Publishing..." : "Save & Push Live"}</span>
+    </button>
+  );
+}
+
+
+
+--- FILE: src\app\admin\login\page.tsx ---
+"use client";
+
+import { useState } from "react";
+import { useAuth } from "../../../context/AuthContext";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Lock } from "lucide-react";
+
+export default function AdminLogin() {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    const success = await login(password);
+    if (success) {
+      router.push("/admin");
+    } else {
+      setError("Incorrect password.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-cream/50 p-4">
+      <div className="bg-white max-w-md w-full p-8 rounded-3xl shadow-xl border border-brown/10 text-center">
+        <div className="flex justify-center mb-6">
+          <Image src="/logo.png" alt="Vishwasa Logo" width={80} height={80} className="object-contain" />
+        </div>
+        <h1 className="text-2xl font-serif font-bold text-brown mb-2">Admin Panel</h1>
+        <p className="text-brown/70 mb-8">Enter your password to manage the website.</p>
+
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-brown/40" size={20} />
+              <input
+                type="password"
+                placeholder="Admin Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-brown/20 focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange text-brown"
+                required
+              />
+            </div>
+          </div>
+          {error && <p className="text-red-500 text-sm text-left">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-orange hover:bg-orange-light text-white font-bold py-3 rounded-xl shadow-md transition-all disabled:opacity-50"
+          >
+            {loading ? "Verifying..." : "Login"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+
+
+--- FILE: src\app\admin\products\page.tsx ---
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import { Plus, Edit2, Trash2, Search, Filter, Package } from "lucide-react";
+import Image from "next/image";
+import { useAuth } from "../../../context/AuthContext";
+import ProductForm from "../../../components/admin/ProductForm";
+
+export default function ProductManager() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
+  const { token } = useAuth();
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(data.products || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(p => {
+      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           p.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = filterCategory === "All" || p.category === filterCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchQuery, filterCategory]);
+
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
+
+    try {
+      const res = await fetch(`/api/products?id=${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        alert("Failed to delete product. Check your session.");
+        return;
+      }
+      fetchProducts();
+    } catch (err) {
+      alert("Failed to delete product.");
+    }
+  };
+
+  const closeForm = () => {
+    setIsAdding(false);
+    setEditingProduct(null);
+  };
+
+  const handleSave = () => {
+    closeForm();
+    fetchProducts();
+  };
+
+  if (loading && products.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-brown/40 gap-4">
+        <div className="animate-spin w-10 h-10 border-4 border-orange/20 border-t-orange rounded-full" />
+        <p className="font-serif font-medium animate-pulse">Loading collection...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 pb-20">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-fade-up">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3 text-orange mb-1">
+            <Package size={20} />
+            <span className="text-xs font-bold uppercase tracking-[0.3em]">Inventory</span>
+          </div>
+          <h1 className="text-4xl font-serif font-bold text-brown">
+            Product <span className="text-orange">Catalog</span>
+          </h1>
+          <p className="text-brown/50 font-medium">Add, edit, or remove snacks from your menu.</p>
+        </div>
+        {!isAdding && !editingProduct && (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="bg-orange hover:bg-orange-light text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 shadow-lg shadow-orange/20 transition-all active:scale-95 group"
+          >
+            <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" /> 
+            <span>Add New Product</span>
+          </button>
+        )}
+      </div>
+
+      {isAdding || editingProduct ? (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <ProductForm
+            initialData={editingProduct || undefined}
+            onSave={handleSave}
+            onCancel={closeForm}
+          />
+        </div>
+      ) : (
+        <div className="space-y-8 animate-fade-up" style={{ animationDelay: '100ms' }}>
+          {/* Controls Bar */}
+          <div className="bg-white/70 backdrop-blur-md p-4 rounded-3xl border border-brown/10 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brown/30" size={18} />
+              <input 
+                type="text"
+                placeholder="Search products by name or description..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-cream/50 border border-brown/5 rounded-2xl py-3 pl-12 pr-4 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange/20 transition-all text-brown"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <Filter className="text-brown/40" size={18} />
+              <select 
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="flex-1 md:w-48 bg-cream/50 border border-brown/5 rounded-2xl py-3 px-4 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange/20 transition-all text-brown font-semibold"
+              >
+                <option value="All">All Categories</option>
+                <option value="Savories">Savories</option>
+                <option value="Sweets">Sweets</option>
+                <option value="Limited Edition">Limited Edition</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredProducts.length === 0 && (
+              <div className="col-span-full flex flex-col items-center justify-center py-24 bg-white/50 rounded-[40px] border-2 border-dashed border-brown/10">
+                <div className="w-20 h-20 bg-cream rounded-full flex items-center justify-center mb-6">
+                  <Package size={32} className="text-brown/20" />
+                </div>
+                <h3 className="text-2xl font-serif font-bold text-brown mb-2">No items found</h3>
+                <p className="text-brown/50">Try adjusting your search or category filters.</p>
+              </div>
+            )}
+            {filteredProducts.map((p: any, idx) => (
+              <div
+                key={p.id}
+                className="group bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-orange/10 border border-brown/5 transition-all duration-500 flex flex-col animate-fade-up"
+                style={{ animationDelay: `${idx * 50}ms` }}
+              >
+                <div className="h-60 bg-cream relative overflow-hidden">
+                  {p.image_url ? (
+                    <Image
+                      src={p.image_url}
+                      alt={p.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-5xl grayscale opacity-30">
+                      ðŸª
+                    </div>
+                  )}
+                  <div className="absolute top-4 left-4 flex flex-col gap-2">
+                    {p.category && (
+                      <span className="bg-orange/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                        {p.category}
+                      </span>
+                    )}
+                  </div>
+                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl text-lg font-bold text-brown shadow-xl border border-brown/5">
+                    â‚¹{p.price}
+                  </div>
+                </div>
+                <div className="p-8 flex-1 flex flex-col">
+                  <h3 className="font-serif font-bold text-2xl text-brown mb-2 group-hover:text-orange transition-colors">
+                    {p.name}
+                  </h3>
+                  <p className="text-brown/50 text-sm leading-relaxed line-clamp-2 mb-8 flex-1 italic">
+                    &ldquo;{p.description}&rdquo;
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-3 mt-auto pt-6 border-t border-brown/5">
+                    <button
+                      onClick={() => setEditingProduct(p)}
+                      className="bg-cream/50 hover:bg-orange hover:text-white text-brown/70 py-3.5 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all active:scale-95 border border-transparent hover:shadow-lg hover:shadow-orange/20"
+                    >
+                      <Edit2 size={18} />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p.id, p.name)}
+                      className="bg-red-50/50 hover:bg-red-500 hover:text-white text-red-500 py-3.5 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all active:scale-95 border border-transparent hover:shadow-lg hover:shadow-red-500/20"
+                    >
+                      <Trash2 size={18} />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
+--- FILE: src\app\admin\layout.tsx ---
+"use client";
+
+import { AuthProvider } from "../../context/AuthContext";
+import ProtectedLayout from "../../components/admin/ProtectedLayout";
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthProvider>
+      <ProtectedLayout>
+        {children}
+      </ProtectedLayout>
+    </AuthProvider>
+  );
+}
+
+
+
+--- FILE: src\app\admin\page.tsx ---
+import { redirect } from 'next/navigation';
+
+export default function AdminDashboard() {
+  redirect('/admin/content');
+}
+
+
+
+--- FILE: src\app\api\auth\route.ts ---
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  try {
+    const { password } = await request.json();
+    if (password === process.env.ADMIN_PASSWORD) {
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
+}
+
+
+
+--- FILE: src\app\api\migrate\route.ts ---
+import { sql } from "@vercel/postgres";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  try {
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS category VARCHAR(255) DEFAULT 'savories';`;
+    return NextResponse.json({ message: "Migration successful: category column added." });
+  } catch (error) {
+    console.error("Migration failed:", error);
+    return NextResponse.json({ error: "Migration failed" }, { status: 500 });
+  }
+}
+
+
+
+--- FILE: src\app\api\products\route.ts ---
+import { sql } from "@vercel/postgres";
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
+
+function isAuthenticated(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  const token = authHeader.split(" ")[1];
+  return token === process.env.ADMIN_PASSWORD;
+}
+
+export async function GET() {
+  try {
+    const { rows } = await sql`SELECT * FROM products ORDER BY created_at DESC;`;
+    return NextResponse.json({ products: rows }, { status: 200 });
+  } catch (error) {
+    console.error("Products GET failed:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch products" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { name, description, price, image_url, highlights, status, category } = body;
+
+    if (!name) {
+      return NextResponse.json(
+        { error: "Product name is required" },
+        { status: 400 }
+      );
+    }
+
+    const { rows } = await sql`
+      INSERT INTO products (name, description, price, image_url, highlights, status, category)
+      VALUES (${name}, ${description || ""}, ${price || ""}, ${image_url || ""}, ${highlights || ""}, ${status || "active"}, ${category || "savories"})
+      RETURNING *;
+    `;
+
+    return NextResponse.json(
+      { message: "Product successfully added", product: rows[0] },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Products POST failed:", error);
+    return NextResponse.json(
+      { error: "Failed to add product" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Product ID is required for deletion" },
+        { status: 400 }
+      );
+    }
+
+    await sql`DELETE FROM products WHERE id = ${id};`;
+    return NextResponse.json({ message: "Product deleted" }, { status: 200 });
+  } catch (error) {
+    console.error("Products DELETE failed:", error);
+    return NextResponse.json(
+      { error: "Failed to delete product" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { id, name, description, price, image_url, highlights, status, category } = body;
+
+    if (!id || !name) {
+      return NextResponse.json(
+        { error: "ID and Name are required" },
+        { status: 400 }
+      );
+    }
+
+    const { rows } = await sql`
+      UPDATE products
+      SET
+        name = ${name},
+        description = ${description || ""},
+        price = ${price || ""},
+        image_url = ${image_url || ""},
+        highlights = ${highlights || ""},
+        status = ${status || "active"},
+        category = ${category || "savories"}
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+
+    return NextResponse.json(
+      { message: "Product updated", product: rows[0] },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Products PUT failed:", error);
+    return NextResponse.json(
+      { error: "Failed to update product" },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+--- FILE: src\app\api\settings\route.ts ---
+import { sql } from "@vercel/postgres";
+import { NextResponse } from "next/server";
+
+function isAuthenticated(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  const token = authHeader.split(" ")[1];
+  return token === process.env.ADMIN_PASSWORD;
+}
+
+export async function GET() {
+  try {
+    const { rows } = await sql`SELECT key, value FROM website_settings;`;
+
+    const settings = rows.reduce((acc, row) => {
+      acc[row.key] = row.value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    return NextResponse.json(settings);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Settings GET failed:", error);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { settings } = body;
+
+    if (!settings || typeof settings !== "object") {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    }
+
+    for (const [key, value] of Object.entries(settings)) {
+      if (typeof value === "string") {
+        try {
+          await sql`
+            INSERT INTO website_settings (key, value)
+            VALUES (${key}, ${value})
+            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+          `;
+        } catch (keyError) {
+          console.error(`Failed to save setting key "${key}":`, keyError);
+          return NextResponse.json(
+            { error: `Failed to save key: ${key}` },
+            { status: 500 }
+          );
+        }
+      }
+    }
+
+    return NextResponse.json({ message: "Settings updated successfully" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Settings POST failed:", error);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+
+
+--- FILE: src\app\api\setup\route.ts ---
+import { sql } from "@vercel/postgres";
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
+
+function isAuthenticated(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  const token = authHeader.split(" ")[1];
+  return token === process.env.ADMIN_PASSWORD;
+}
+
+export async function GET(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS products (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        price VARCHAR(100),
+        image_url TEXT,
+        highlights TEXT,
+        status VARCHAR(50) DEFAULT 'active',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS website_settings (
+        key VARCHAR(255) PRIMARY KEY,
+        value TEXT,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    return NextResponse.json(
+      { message: "Database Setup Successful! Tables created." },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Setup failed:", error);
+    return NextResponse.json(
+      { error: "Database setup failed" },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+--- FILE: src\app\api\upload\route.ts ---
+import { put } from "@vercel/blob";
+import { NextResponse } from "next/server";
+
+function isAuthenticated(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  return authHeader.split(" ")[1] === process.env.ADMIN_PASSWORD;
+}
+
+export async function POST(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
+    if (!file) {
+      return NextResponse.json(
+        { error: "No file provided" },
+        { status: 400 }
+      );
+    }
+
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "Only image files are allowed" },
+        { status: 400 }
+      );
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "File must be under 5MB" },
+        { status: 400 }
+      );
+    }
+
+    const blob = await put(file.name, file, { access: "public" });
+    return NextResponse.json({ url: blob.url });
+  } catch (error) {
+    console.error("Upload failed:", error);
+    return NextResponse.json(
+      { error: "Image upload failed" },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+--- FILE: src\app\contact\page.tsx ---
+"use client";
+
+import { useState } from "react";
+import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { useSettings } from "../../context/SettingsContext";
+
+export default function ContactPage() {
+  const settings = useSettings();
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = () => {
+    if (!name.trim() || !message.trim()) {
+      alert("Please fill in your name and message.");
+      return;
+    }
+    const text = encodeURIComponent(
+      `Hi Vishwasa!\nName: ${name}\nPhone: ${phone}\nMessage: ${message}`
+    );
+    window.open(
+      `https://wa.me/${settings.whatsappNumber}?text=${text}`,
+      "_blank"
+    );
+  };
+
+  return (
+    <div className="py-16 bg-cream/20 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h1 className="font-serif text-4xl sm:text-5xl font-bold text-brown mb-4">
+            Get in Touch
+          </h1>
+          <p className="text-lg text-brown/70">
+            We&apos;d love to hear from you. Reach out for bulk orders or
+            feedback.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Contact Form */}
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-brown/10">
+            <h2 className="font-serif text-2xl font-bold text-brown mb-6">
+              Send us a message
+            </h2>
+            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <div>
+                <label className="block text-sm font-medium text-brown mb-2">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 rounded-lg border border-brown/20 focus:outline-none focus:ring-2 focus:ring-orange/50"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-brown mb-2">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  className="w-full px-4 py-3 rounded-lg border border-brown/20 focus:outline-none focus:ring-2 focus:ring-orange/50"
+                  placeholder="Your phone number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-brown mb-2">
+                  Message
+                </label>
+                <textarea
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg border border-brown/20 focus:outline-none focus:ring-2 focus:ring-orange/50"
+                  placeholder="How can we help you?"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="w-full bg-orange hover:bg-orange-light text-white font-bold py-3 rounded-lg transition-colors"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
+
+          {/* Contact Info */}
+          <div className="space-y-8">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-brown/10 flex items-start gap-4 hover:shadow-md transition-shadow">
+              <div className="bg-green/10 p-4 rounded-full text-green">
+                <MessageCircle size={32} />
+              </div>
+              <div>
+                <h3 className="font-bold text-xl text-brown mb-2">
+                  WhatsApp Us
+                </h3>
+                <p className="text-brown/70 mb-4">
+                  Fastest way to order or ask questions.
+                </p>
+                <a
+                  href={`https://wa.me/${settings.whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green font-bold hover:underline"
+                >
+                  +{settings.whatsappNumber}
+                </a>
+              </div>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-brown/10 flex items-start gap-4">
+              <div className="bg-orange/10 p-4 rounded-full text-orange">
+                <MapPin size={32} />
+              </div>
+              <div>
+                <h3 className="font-bold text-xl text-brown mb-2">
+                  Our Kitchen
+                </h3>
+                <p className="text-brown/70 whitespace-pre-wrap">
+                  {settings.contactAddress}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-brown/10 flex items-start gap-4">
+              <div className="bg-brown/10 p-4 rounded-full text-brown">
+                <Mail size={32} />
+              </div>
+              <div>
+                <h3 className="font-bold text-xl text-brown mb-2">
+                  Email Us
+                </h3>
+                <p className="text-brown/70">{settings.contactEmail}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+--- FILE: src\app\products\page.tsx ---
+import { sql } from "@vercel/postgres";
+import ProductList from "../../components/ProductList";
+
+export const dynamic = "force-dynamic";
+
+export default async function ProductsPage() {
+  let products: any[] = [];
+  let initialError = false;
+
+  try {
+    const { rows } = await sql`SELECT * FROM products WHERE status = 'active' ORDER BY created_at DESC;`;
+    products = rows;
+  } catch (error) {
+    console.warn("Could not load products:", error);
+    initialError = true;
+    products = [];
+  }
+
+  return (
+    <div className="relative pt-32 pb-24 bg-cream/30 min-h-screen overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-orange/5 to-transparent -z-10" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-orange/10 rounded-full blur-3xl -z-10 animate-pulse" />
+      <div className="absolute top-1/2 -left-24 w-72 h-72 bg-brown/5 rounded-full blur-3xl -z-10" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16 animate-fade-up">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-orange/10 text-orange font-bold text-sm tracking-wider uppercase mb-4">
+            Our Collection
+          </span>
+          <h1 className="font-serif text-5xl sm:text-6xl font-bold text-brown mb-6 leading-tight">
+            Traditional <span className="text-orange italic">Snacks</span>
+          </h1>
+          <p className="text-xl text-brown/70 max-w-2xl mx-auto font-medium">
+            Discover the authentic taste of tradition. Made fresh with pure butter, 
+            cold-pressed oils, and zero preservatives.
+          </p>
+        </div>
+
+        <ProductList initialProducts={products} initialError={initialError} />
+      </div>
+    </div>
+  );
+}
+
+
+
+--- FILE: src\app\globals.css ---
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fff8f0;
+  --foreground: #5d2e13;
+  --cream-light: #fffdfa;
+  --brown-dark: #3a1c0b;
+  --orange-gold: #e67e22;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-feature-settings: "ss01", "ss02", "cv01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-solid {
+    background: rgba(255, 252, 248, 0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: #d4a373;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+
+
+--- FILE: src\app\layout.tsx ---
+import type { Metadata } from "next";
+import { Inter, Playfair_Display } from "next/font/google";
+import "./globals.css";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import CartFAB from "../components/CartFAB";
+import CartSidebar from "../components/CartSidebar";
+import WhatsAppFAB from "../components/WhatsAppFAB";
+import { CartProvider } from "../context/CartContext";
+import { SettingsProvider } from "../context/SettingsContext";
+import { sql } from "@vercel/postgres";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
+
+export const metadata: Metadata = {
+  title: "Vishwasa - Traditional South Indian Snacks",
+  description:
+    "Mother's Trust, Nature's Best. Traditional recipes made with better ingredients, no palm oil, and cold-pressed oils.",
+};
+
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  let initialSettings = {};
+  try {
+    const { rows } = await sql`SELECT key, value FROM website_settings;`;
+    initialSettings = rows.reduce(
+      (acc: Record<string, string>, row) => ({ ...acc, [row.key]: row.value }),
+      {}
+    );
+  } catch (error) {
+    console.error(
+      "Failed to fetch settings from DB, falling back to defaults.",
+      error
+    );
+  }
+
+  return (
+    <html lang="en">
+      <body
+        className={`${inter.variable} ${playfair.variable} font-sans antialiased min-h-screen flex flex-col relative`}
+      >
+        <SettingsProvider initialSettings={initialSettings}>
+          <CartProvider>
+            <Navbar />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+            <CartFAB />
+            <CartSidebar />
+            <WhatsAppFAB />
+          </CartProvider>
+        </SettingsProvider>
+      </body>
+    </html>
+  );
+}
+
+
+
+--- FILE: src\app\page.tsx ---
+import { sql } from "@vercel/postgres";
+import HomeHero from "../components/HomeHero";
+import ProductCard from "../components/ProductCard";
+import Link from "next/link";
+
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  let featuredProducts: any[] = [];
+
+  try {
+    const { rows } = await sql`
+      SELECT * FROM products
+      WHERE status = 'active'
+      ORDER BY created_at DESC
+      LIMIT 8;
+    `;
+    featuredProducts = rows;
+  } catch (error) {
+    console.error("Failed to fetch featured products:", error);
+    featuredProducts = [];
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <HomeHero />
+
+      {featuredProducts.length > 0 && (
+        <section className="py-20 bg-cream/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="font-serif text-4xl sm:text-5xl font-bold text-brown mb-3">
+                Our Snacks
+              </h2>
+              <p className="text-lg text-brown/60 font-medium">
+                Fresh. Traditional. Made with care.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link
+                href="/products"
+                className="inline-block bg-orange text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                View All Products
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+
+
+--- FILE: src\components\admin\ProductForm.tsx ---
+"use client";
+
+import { useState, useRef } from "react";
+import {
+  UploadCloud,
+  X,
+  CheckCircle,
+  Image as ImageIcon,
+  Loader2,
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+
+type ProductInput = {
+  id: number | null;
+  name: string;
+  description: string;
+  price: string;
+  image_url: string;
+  highlights: string;
+  status: string;
+  category: string;
+};
+
+export default function ProductForm({
+  initialData,
+  onSave,
+  onCancel,
+}: {
+  initialData?: ProductInput;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const [formData, setFormData] = useState<ProductInput>(
+    initialData || {
+      id: null,
+      name: "",
+      description: "",
+      price: "",
+      image_url: "",
+      highlights: "",
+      status: "active",
+      category: "savories",
+    }
+  );
+  const [isDragging, setIsDragging] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { token } = useAuth();
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const uploadFile = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload a valid image file.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setFormData((prev) => ({ ...prev, image_url: data.url }));
+      } else {
+        alert("Image upload failed.");
+      }
+    } catch (err) {
+      alert("Image upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      uploadFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      uploadFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    const method = formData.id ? "PUT" : "POST";
+
+    try {
+      const res = await fetch("/api/products", {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        onSave();
+      } else {
+        alert("Failed to save product.");
+      }
+    } catch (err) {
+      alert("Error saving.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-xl border border-brown/10 relative">
+      <button
+        onClick={onCancel}
+        className="absolute top-4 right-4 text-brown/50 hover:text-brown bg-cream rounded-full p-2"
+      >
+        <X size={20} />
+      </button>
+
+      <h2 className="text-2xl font-serif text-brown mb-6">
+        {formData.id ? "Edit Product" : "Add New Product"}
+      </h2>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Product Name *
+              </label>
+              <input
+                required
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Price
+              </label>
+              <input
+                value={formData.price}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                placeholder="e.g. â‚¹150 for 250g"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Highlights (comma separated)
+              </label>
+              <input
+                value={formData.highlights}
+                onChange={(e) =>
+                  setFormData({ ...formData, highlights: e.target.value })
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                placeholder="Cold Pressed, Vegan"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Category
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none bg-white font-medium"
+              >
+                <option value="savories">Savories (Snacks)</option>
+                <option value="sweets">Sweets</option>
+                <option value="limited">Limited Edition</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Description
+              </label>
+              <textarea
+                rows={3}
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+              Product Image
+            </label>
+            <div
+              className={`mt-1 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center p-6 h-64 transition-colors text-center ${
+                isDragging
+                  ? "border-orange bg-orange/5"
+                  : "border-brown/20 bg-cream/50 hover:bg-cream"
+              }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+              {uploading ? (
+                <div className="flex flex-col items-center text-orange">
+                  <Loader2 size={48} className="mb-4 animate-spin" />
+                  <p className="font-bold">Uploading image...</p>
+                </div>
+              ) : formData.image_url ? (
+                <div className="relative w-full h-full">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={formData.image_url}
+                    alt="Preview"
+                    className="w-full h-full object-contain rounded-xl"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                    <span className="text-white font-bold flex items-center gap-2">
+                      <ImageIcon size={20} /> Change Image
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center text-brown/60">
+                  <UploadCloud size={48} className="mb-4 text-orange" />
+                  <p className="font-bold">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="text-sm mt-1">SVG, PNG, JPG (Max. 800x800px)</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-4 pt-4 border-t border-brown/10">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-6 py-3 rounded-xl font-bold text-brown/70 hover:bg-cream transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="bg-orange hover:bg-orange-light text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all disabled:opacity-50"
+          >
+            {saving ? (
+              <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
+            ) : (
+              <CheckCircle size={20} />
+            )}
+            {saving ? "Saving..." : "Save Product"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+
+
+--- FILE: src\components\admin\ProtectedLayout.tsx ---
+"use client";
+
+import { useAuth } from "../../context/AuthContext";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Sidebar from "./Sidebar";
+import { Menu, X, Bell } from "lucide-react";
+
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, logout } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated && pathname !== "/admin/login") {
+      router.push("/admin/login");
+    }
+  }, [mounted, isAuthenticated, pathname, router]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  if (!mounted) return <div className="min-h-screen bg-cream"></div>;
+
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <div className="flex min-h-screen bg-[#FDFCFB] relative overflow-hidden">
+      {/* Desktop Sidebar */}
+      <Sidebar />
+      
+      {/* Mobile Top Bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-md border-b border-brown/5 px-6 flex items-center justify-between z-[60]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange/10 rounded-xl flex items-center justify-center p-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+          </div>
+          <span className="font-serif font-bold text-lg text-brown tracking-tight">Vishwasa</span>
+        </div>
+        <button 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+          className="text-brown bg-cream/50 p-2.5 rounded-xl border border-brown/5 shadow-sm active:scale-95 transition-all"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+          <div className="w-72 bg-white h-full shadow-2xl animate-in slide-in-from-left duration-300">
+            <div className="h-full pt-20">
+               <Sidebar />
+            </div>
+          </div>
+          <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
+        </div>
+      )}
+
+      {/* Main Content Area */}
+      <main className="flex-1 min-h-screen md:h-screen md:overflow-y-auto pt-24 md:pt-0 relative">
+        {/* Subtle Decorative Background */}
+        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-orange/[0.02] rounded-full blur-[120px] -z-10" />
+        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-brown/[0.02] rounded-full blur-[120px] -z-10" />
+        
+        <div className="p-4 md:p-10 max-w-6xl mx-auto">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+
+
+--- FILE: src\components\admin\Sidebar.tsx ---
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { 
+  LayoutDashboard, 
+  FileText, 
+  Package, 
+  LogOut, 
+  ExternalLink,
+  Settings,
+  ChevronRight
+} from "lucide-react";
+import Image from "next/image";
+import { useAuth } from "../../context/AuthContext";
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const { logout } = useAuth();
+
+  const links = [
+    { href: "/admin/content", icon: <FileText size={20} />, label: "Site Content" },
+    { href: "/admin/products", icon: <Package size={20} />, label: "Product Catalog" },
+  ];
+
+  return (
+    <aside className="w-64 bg-white/70 backdrop-blur-xl border-r border-brown/10 hidden md:flex flex-col h-screen sticky top-0 shadow-2xl z-50">
+      <div className="p-8 border-b border-brown/5 flex flex-col items-center gap-4">
+        <div className="relative w-16 h-16 rounded-2xl bg-orange/10 flex items-center justify-center p-3 shadow-inner">
+          <Image src="/logo.png" alt="Vishwasa Logo" width={48} height={48} className="object-contain" />
+        </div>
+        <div className="text-center">
+          <h1 className="font-serif font-bold text-xl text-brown">Vishwasa</h1>
+          <p className="text-[10px] text-orange font-bold uppercase tracking-[0.2em] mt-1">Management Console</p>
+        </div>
+      </div>
+
+      <div className="px-4 py-6">
+        <p className="text-[10px] font-bold text-brown/40 uppercase tracking-widest px-4 mb-4">Main Menu</p>
+        <nav className="flex flex-col gap-1.5">
+          {links.map((link) => {
+            const isActive = pathname === link.href || (link.href !== "/admin" && pathname?.startsWith(link.href));
+            
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`group flex items-center justify-between px-4 py-3 rounded-2xl font-semibold transition-all duration-300 ${
+                  isActive 
+                    ? "bg-orange text-white shadow-lg shadow-orange/20" 
+                    : "text-brown/60 hover:bg-orange/5 hover:text-orange"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {link.icon}
+                  <span>{link.label}</span>
+                </div>
+                {isActive && <ChevronRight size={16} className="text-white/70" />}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mt-8">
+          <p className="text-[10px] font-bold text-brown/40 uppercase tracking-widest px-4 mb-4">Quick Links</p>
+          <Link
+            href="/"
+            target="_blank"
+            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-brown/60 hover:bg-cream hover:text-brown transition-all duration-300 border border-transparent hover:border-brown/10 shadow-sm hover:shadow-md"
+          >
+            <ExternalLink size={20} className="text-orange" />
+            <span>View Live Site</span>
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-auto p-6 border-t border-brown/5">
+        <button
+          onClick={logout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-red-500 hover:bg-red-50 transition-all duration-300 group"
+        >
+          <div className="p-2 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors text-red-500">
+            <LogOut size={18} />
+          </div>
+          Logout
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+
+
+--- FILE: src\components\CartFAB.tsx ---
+"use client";
+
+import { ShoppingBag } from "lucide-react";
+import { useCart } from "../context/CartContext";
+
+export default function CartFAB() {
+  const { cart, setIsCartOpen } = useCart();
+  
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  if (totalItems === 0) return null;
+
+  return (
+    <button
+      onClick={() => setIsCartOpen(true)}
+      className="fixed bottom-6 right-6 bg-brown text-cream p-4 rounded-full shadow-2xl hover:bg-orange transition-all hover:scale-110 z-40 border-4 border-cream flex items-center justify-center group"
+      aria-label="Open Shopping Cart"
+    >
+      <ShoppingBag size={28} />
+      <span className="absolute -top-3 -right-3 bg-orange text-white w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-cream shadow-md">
+        {totalItems}
+      </span>
+    </button>
+  );
+}
+
+
+
+--- FILE: src\components\CartSidebar.tsx ---
+"use client";
+
+import { useState, useEffect } from "react";
+import { useCart } from "../context/CartContext";
+import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useSettings } from "../context/SettingsContext";
+import { useRouter } from "next/navigation";
+
+const MIN_ORDER = 240;
+
+export default function CartSidebar() {
+  const {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    isCartOpen,
+    setIsCartOpen,
+    clearCart,
+  } = useCart();
+  const settings = useSettings();
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [minOrderWarning, setMinOrderWarning] = useState(false);
+  const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const [upsellLoading, setUpsellLoading] = useState(false);
+
+  const parsePrice = (priceStr: string) => {
+    const match = priceStr.match(/\d+/);
+    return match ? parseInt(match[0]) : 0;
+  };
+
+  const total = cart.reduce(
+    (sum: number, item: any) => sum + parsePrice(item.price) * item.quantity,
+    0
+  );
+
+  const cartIds = new Set(cart.map((item: any) => item.id));
+  const remaining = MIN_ORDER - total;
+  const belowMin = total < MIN_ORDER;
+
+  // Fetch upsell products when cart is open and below minimum
+  useEffect(() => {
+    if (!isCartOpen || cart.length === 0 || !belowMin) return;
+    setUpsellLoading(true);
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        const all: any[] = data.products || [];
+        setUpsellProducts(all.filter((p: any) => !cartIds.has(p.id)).slice(0, 10));
+      })
+      .catch(() => {/* fail silently */})
+      .finally(() => setUpsellLoading(false));
+  }, [isCartOpen, cart.length, belowMin]); // eslint-disable-line
+
+  const handleCheckout = () => {
+    if (belowMin) {
+      setMinOrderWarning(true);
+      return;
+    }
+    setMinOrderWarning(false);
+
+    if (!name.trim() || !address.trim()) {
+      alert("Please enter your name and delivery address to continue.");
+      return;
+    }
+
+    const whatsappNumber = settings.whatsappNumber;
+    let text = settings.checkoutGreeting + "\n\n";
+    cart.forEach((item: any) => {
+      text += "- " + item.quantity + "x " + item.name + " (" + item.price + ")\n";
+    });
+    text += "\n*Grand Total: \u20B9" + total + "*\n";
+    text += "\nMy Delivery Details:\nName: " + name + "\nAddress: " + address + "\n";
+
+    const encodedText = encodeURIComponent(text);
+    const cleanNumber = whatsappNumber.replace(/\D/g, "");
+    window.open("https://wa.me/" + cleanNumber + "?text=" + encodedText, "_blank");
+    clearCart();
+    setIsCartOpen(false);
+  };
+
+  const overlayClass = isCartOpen
+    ? "fixed inset-0 bg-brown/20 z-[110] backdrop-blur-md transition-all duration-500 opacity-100"
+    : "fixed inset-0 bg-brown/20 z-[110] backdrop-blur-md transition-all duration-500 opacity-0 pointer-events-none";
+
+  const drawerClass = isCartOpen
+    ? "fixed inset-y-0 right-0 w-full max-w-md glass shadow-2xl z-[120] flex flex-col transition-all duration-500 ease-out transform translate-x-0"
+    : "fixed inset-y-0 right-0 w-full max-w-md glass shadow-2xl z-[120] flex flex-col transition-all duration-500 ease-out transform translate-x-full";
+
+  return (
+    <>
+      <div className={overlayClass} onClick={() => setIsCartOpen(false)} />
+
+      <div className={drawerClass}>
+        <div className="flex items-center justify-between p-6 border-b border-brown/10">
+          <h2 className="text-3xl font-serif font-bold text-brown flex items-center gap-3">
+            <ShoppingBag className="text-orange-gold" /> Your Bag
+          </h2>
+          <button
+            onClick={() => setIsCartOpen(false)}
+            className="hover:bg-brown/5 p-2 rounded-full transition-colors text-brown"
+          >
+            <X size={28} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {cart.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center text-brown/40 animate-fade-in">
+              <div className="bg-brown/5 p-8 rounded-full mb-6">
+                <ShoppingBag size={64} strokeWidth={1} />
+              </div>
+              <p className="font-serif text-2xl font-bold text-brown/60 mb-2">
+                Your bag is empty
+              </p>
+              <p className="max-w-[200px] text-sm text-brown/50">
+                Add at least 2 packs to place an order (min. &#8377;240)
+              </p>
+              <button
+                onClick={() => { setIsCartOpen(false); router.push("/products"); }}
+                className="mt-8 text-orange font-bold hover:underline"
+              >
+                Browse Snacks
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {cart.map((item: any) => (
+                <div
+                  key={item.id}
+                  className="flex gap-4 bg-white/50 p-4 rounded-2xl border border-brown/5 animate-fade-up"
+                >
+                  <div className="w-24 h-24 bg-cream-light rounded-2xl overflow-hidden shrink-0 relative border border-brown/5">
+                    {item.image_url ? (
+                      <Image
+                        src={item.image_url}
+                        alt={item.name}
+                        fill
+                        sizes="96px"
+                        className="object-contain p-2"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl">
+                        ðŸª
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 flex flex-col justify-between py-1">
+                    <div>
+                      <h4 className="font-bold text-brown text-lg leading-tight line-clamp-2">
+                        {item.name}
+                      </h4>
+                      <div className="text-orange-gold font-bold mt-1">
+                        {item.price}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center gap-4 bg-brown/5 px-3 py-1.5 rounded-xl border border-brown/10">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="text-brown hover:text-orange-gold transition-colors"
+                        >
+                          <Minus size={18} />
+                        </button>
+                        <span className="font-bold text-brown min-w-[20px] text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="text-brown hover:text-orange-gold transition-colors"
+                        >
+                          <Plus size={18} />
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-brown/30 hover:text-red-500 p-2 transition-colors"
+                        aria-label="Remove item"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Upsell Panel â€” shown when below MIN_ORDER */}
+              {belowMin && (
+                <div className="bg-orange/5 rounded-2xl border border-orange/20 p-4">
+                  <p className="font-bold text-brown text-sm mb-3">
+                    Pick one more to unlock checkout
+                  </p>
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {upsellLoading
+                      ? [0, 1, 2].map((i) => (
+                          <div
+                            key={i}
+                            className="shrink-0 w-32 h-20 bg-brown/5 rounded-xl animate-pulse"
+                          />
+                        ))
+                      : upsellProducts.map((p: any) => (
+                          <div
+                            key={p.id}
+                            className="shrink-0 flex flex-col items-center bg-white rounded-xl p-2 shadow-sm border border-brown/5 w-28"
+                          >
+                            <div className="relative w-12 h-12 mb-1 rounded-lg overflow-hidden bg-cream-light">
+                              {p.image_url ? (
+                                <Image
+                                  src={p.image_url}
+                                  alt={p.name}
+                                  fill
+                                  sizes="48px"
+                                  className="object-contain p-1"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-xl">ðŸª</div>
+                              )}
+                            </div>
+                            <p className="text-[10px] font-bold text-brown text-center line-clamp-2 leading-tight mb-1">
+                              {p.name}
+                            </p>
+                            <p className="text-[10px] text-orange font-bold mb-2">
+                              &#8377;{p.price}
+                            </p>
+                            <button
+                              onClick={() =>
+                                addToCart({
+                                  id: p.id,
+                                  name: p.name,
+                                  price: p.price,
+                                  image_url: p.image_url,
+                                })
+                              }
+                              className="bg-orange text-white text-xs font-bold px-3 py-1 rounded-full hover:bg-orange-light transition-colors"
+                            >
+                              + Add
+                            </button>
+                          </div>
+                        ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {cart.length > 0 && (
+          <div className="glass-solid p-6 border-t border-brown/10 shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
+            {/* Minimum order warning */}
+            {(belowMin || minOrderWarning) && (
+              <div className="bg-orange/10 border border-orange/30 rounded-xl px-4 py-2 mb-4 text-sm text-brown font-semibold text-center">
+                Minimum order is &#8377;240. Add &#8377;{remaining} more to checkout.
+              </div>
+            )}
+
+            <div className="mb-6 space-y-4">
+              <div className="flex flex-col gap-3">
+                <input
+                  type="text"
+                  placeholder="Your Full Name"
+                  value={name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                  className="w-full bg-brown/5 border border-brown/10 rounded-xl px-4 py-3 text-brown placeholder:text-brown/40 focus:outline-none focus:border-orange-gold transition-all"
+                />
+                <textarea
+                  placeholder="Full Delivery Address"
+                  value={address}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAddress(e.target.value)}
+                  className="w-full bg-brown/5 border border-brown/10 rounded-xl px-4 py-3 text-brown placeholder:text-brown/40 h-24 resize-none focus:outline-none focus:border-orange-gold transition-all"
+                />
+              </div>
+              <p className="text-[10px] uppercase font-bold text-brown/40 tracking-widest text-center">
+                {settings.deliveryWarning}
+              </p>
+            </div>
+
+            <div className="flex justify-between items-center mb-6 px-2">
+              <span className="font-serif text-lg text-brown/60">Grand Total</span>
+              <span className="text-4xl font-bold text-brown">&#8377;{total}</span>
+            </div>
+
+            {belowMin ? (
+              <button
+                disabled
+                className="w-full bg-brown/20 text-brown/50 py-5 rounded-2xl font-bold flex items-center justify-center gap-3 cursor-not-allowed text-base"
+              >
+                Add &#8377;{remaining} more to order
+              </button>
+            ) : (
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-orange hover:bg-brown-dark text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 text-xl"
+              >
+                <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                </svg>
+                Chat on WhatsApp to Order
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+
+
+--- FILE: src\components\Footer.tsx ---
+"use client";
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { ShieldCheck } from 'lucide-react';
+import { useSettings } from "../context/SettingsContext";
+
+export default function Footer() {
+  const settings = useSettings();
+  return (
+    <footer className="bg-brown text-cream pt-12 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-white rounded p-1 flex items-center justify-center">
+                <Image src="/logo.png" alt="Vishwasa Logo" width={32} height={32} className="object-contain" />
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-cream">{settings.brandName}</h3>
+            </div>
+            <p className="text-cream/80 max-w-sm mb-4">{settings.footerAbout}</p>
+            <div className="flex items-center gap-2 text-sm text-cream/90 bg-cream/10 p-2 rounded inline-block">
+              <ShieldCheck size={16} />
+              <span>FSSAI Certified</span>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-bold text-lg mb-4 text-orange-light">Quick Links</h4>
+            <ul className="space-y-2">
+              <li><Link href="/products" className="hover:text-amber-100 transition-colors">Our Products</Link></li>
+              <li><Link href="/about" className="hover:text-amber-100 transition-colors">Our Story</Link></li>
+              <li><Link href="/contact" className="hover:text-amber-100 transition-colors">Contact Us</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold text-lg mb-4 text-orange-light">Contact</h4>
+            <ul className="space-y-2 text-cream/80">
+              <li className="whitespace-pre-wrap">{settings.contactAddress}</li>
+              <li>{settings.contactEmail}</li>
+              <li>
+                <a
+                  href="https://instagram.com/vishwasafoods"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-light hover:text-cream transition-colors"
+                >
+                  @vishwasafoods
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-cream/20 pt-8 text-center text-sm text-cream/60">
+          <p>&copy; {new Date().getFullYear()} Vishwasa Foods. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+
+
+--- FILE: src\components\HomeHero.tsx ---
+"use client";
+
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Leaf, Droplets, Heart, ShieldCheck, Package, Clock } from "lucide-react";
+import { useSettings } from "../context/SettingsContext";
+import { useRouter } from "next/navigation";
+
+export default function HomeHero() {
+  const settings = useSettings();
+  const router = useRouter();
+  const [showBar, setShowBar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBar(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="relative min-h-[90vh] flex items-center bg-cream-light py-24 sm:py-32 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-gold/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-1/4 h-full bg-brown/5 blur-[100px] rounded-full pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <h1 className="font-serif text-6xl sm:text-8xl font-bold text-brown mb-8 tracking-tight whitespace-pre-wrap animate-fade-up">
+            {settings.heroTitle}
+          </h1>
+          <p className="text-xl sm:text-2xl text-brown/70 mb-12 max-w-3xl mx-auto whitespace-pre-wrap animate-fade-up [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
+            {settings.heroSubtitle}
+          </p>
+          <div className="flex justify-center gap-6 animate-fade-up [animation-delay:400ms] opacity-0 [animation-fill-mode:forwards]">
+            <Link
+              href="/products"
+              className="bg-brown hover:bg-brown-dark text-white font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 block"
+            >
+              Shop Our Collection
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Strip */}
+      <div className="bg-brown py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: ShieldCheck, label: "FSSAI Licensed" },
+              { icon: Leaf, label: "No Preservatives" },
+              { icon: Package, label: "Ships Pan-India" },
+              { icon: Clock, label: "Fresh Every Batch" },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center justify-center gap-2 text-cream">
+                <Icon size={18} strokeWidth={2} />
+                <span className="text-sm font-semibold">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <section className="bg-white py-20 border-y border-brown/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              { icon: Leaf, title: settings.feature1Title || "No Palm Oil", desc: settings.feature1Desc || "Absolutely zero palm oil in any of our products.", color: "text-green-600", bg: "bg-green-50" },
+              { icon: Droplets, title: settings.feature2Title || "Cold Pressed Oils", desc: settings.feature2Desc || "Made exclusively using groundnut and sesame cold pressed oils.", color: "text-orange-600", bg: "bg-orange-50" },
+              { icon: Heart, title: settings.feature3Title || "Butter Based", desc: settings.feature3Desc || "Authentic recipes made rich and melt-in-mouth with pure butter.", color: "text-red-600", bg: "bg-red-50" }
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="group flex flex-col items-center p-8 rounded-3xl hover:bg-cream-light transition-all duration-500 animate-fade-up [animation-delay:var(--delay)] opacity-0 [animation-fill-mode:forwards]"
+                style={{ "--delay": `${600 + i * 200}ms` } as React.CSSProperties}
+              >
+                <div className={feature.bg + " w-20 h-20 rounded-2xl flex items-center justify-center mb-6 " + feature.color + " group-hover:scale-110 transition-transform duration-500 shadow-sm"}>
+                  <feature.icon size={36} strokeWidth={1.5} />
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-brown mb-3">{feature.title}</h3>
+                <p className="text-brown/60 text-center leading-relaxed whitespace-pre-wrap">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sticky Mobile Bottom Bar */}
+      {showBar && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[200] p-4 bg-white/90 backdrop-blur-md border-t border-brown/10 shadow-2xl">
+          <button
+            onClick={() => router.push("/products")}
+            className="w-full bg-orange text-white font-bold py-4 rounded-2xl text-lg shadow-lg active:scale-95 transition-transform"
+          >
+            Shop Our Snacks â†’
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
+
+
+--- FILE: src\components\Navbar.tsx ---
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Menu, X } from "lucide-react";
+import { useSettings } from "../context/SettingsContext";
+
+export default function Navbar() {
+  const settings = useSettings();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+        scrolled 
+          ? "glass h-16 shadow-md" 
+          : "bg-transparent h-20"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex justify-between items-center h-full">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Image 
+              src="/logo.png" 
+              alt="Vishwasa Logo" 
+              width={scrolled ? 32 : 40} 
+              height={scrolled ? 32 : 40} 
+              className="object-contain transition-all duration-300" 
+            />
+            <span className={`font-serif font-bold text-brown tracking-tight transition-all duration-300 ${
+              scrolled ? "text-xl" : "text-3xl"
+            }`}>
+              {settings.brandName}
+            </span>
+          </Link>
+          
+          <div className="hidden md:flex items-center space-x-8">
+            {["Home", "Products", "About", "Contact"].map((item) => (
+              <Link 
+                key={item}
+                href={item === "Home" ? "/" : `/${item.toLowerCase()}`} 
+                className={`text-brown hover:text-orange-gold transition-colors font-semibold relative group ${
+                  scrolled ? "text-sm" : "text-base"
+                }`}
+              >
+                {item}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-gold transition-all duration-300 group-hover:w-full" />
+              </Link>
+            ))}
+          </div>
+
+          <div className="md:hidden flex items-center">
+            <button 
+              className="text-brown p-2 hover:bg-brown/5 rounded-full transition-colors" 
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div 
+        className={`md:hidden absolute top-full left-0 right-0 glass shadow-2xl transition-all duration-300 overflow-hidden ${
+          mobileOpen ? "max-h-[300px] border-t border-brown/10" : "max-h-0"
+        }`}
+      >
+        <div className="flex flex-col px-6 py-8 space-y-6">
+          {["Home", "Products", "About", "Contact"].map((item) => (
+            <Link 
+              key={item}
+              href={item === "Home" ? "/" : `/${item.toLowerCase()}`} 
+              onClick={() => setMobileOpen(false)} 
+              className="text-brown font-bold text-lg hover:text-orange-gold transition-colors"
+            >
+              {item}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+
+
+--- FILE: src\components\ProductCard.tsx ---
+"use client";
+
+import { useState } from "react";
+import { useCart } from "../context/CartContext";
+import { Plus, Check } from "lucide-react";
+import Image from "next/image";
+
+type ProductInput = {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  image_url: string;
+  highlights: string;
+};
+
+export default function ProductCard({ product }: { product: ProductInput }) {
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  const highlights = product.highlights ? product.highlights.split(",") : [];
+
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-brown/10 flex flex-col hover:shadow-xl transition-shadow group">
+      <div className="relative h-64 bg-cream overflow-hidden">
+        {product.image_url ? (
+          <Image
+            src={product.image_url}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 100vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-6xl">
+            ðŸª
+          </div>
+        )}
+        <div className="absolute top-4 right-4 bg-orange text-white px-3 py-1 rounded-full font-bold shadow-md">
+          {product.price}
+        </div>
+      </div>
+
+      <div className="p-6 flex-1 flex flex-col">
+        <h3 className="text-2xl font-serif font-bold text-brown mb-2">
+          {product.name}
+        </h3>
+        <p className="text-brown/70 mb-4 flex-1 line-clamp-3">
+          {product.description}
+        </p>
+
+        {highlights.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {highlights.map(
+              (h, i) =>
+                h.trim() && (
+                  <span
+                    key={i}
+                    className="text-xs bg-cream text-brown px-3 py-1 rounded-full font-medium border border-brown/10 tracking-wide"
+                  >
+                    {h.trim()}
+                  </span>
+                )
+            )}
+          </div>
+        )}
+
+        <button
+          onClick={handleAddToCart}
+          className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all duration-300 ${
+            added 
+              ? "bg-green-600 text-white" 
+              : "bg-teal-700 hover:bg-brown-dark text-white shadow-lg hover:shadow-teal-700/20"
+          }`}
+        >
+          {added ? (
+            <>
+              <Check size={20} />
+              Added!
+            </>
+          ) : (
+            <>
+              <Plus size={20} />
+              Add to Cart
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+
+--- FILE: src\components\ProductList.tsx ---
+"use client";
+
+import { useState, useMemo } from "react";
+import ProductCard from "./ProductCard";
+import { useSettings } from "../context/SettingsContext";
+
+interface ProductListProps {
+  initialProducts: any[];
+  initialError?: boolean;
+}
+
+export default function ProductList({ initialProducts, initialError }: ProductListProps) {
+  const settings = useSettings();
+  const [activeCategory, setActiveCategory] = useState("all");
+
+  const categories = [
+    { id: "all", label: "All Products" },
+    { id: "savories", label: "Savories" },
+    { id: "sweets", label: "Sweets" },
+    { id: "limited", label: "Special Edition" },
+  ];
+
+  const filteredProducts = useMemo(() => {
+    if (activeCategory === "all") return initialProducts;
+    return initialProducts.filter((p) => p.category === activeCategory);
+  }, [activeCategory, initialProducts]);
+
+  if (initialError) {
+    return (
+      <div className="w-full bg-white/60 backdrop-blur-sm rounded-3xl border border-brown/10 p-12 text-center animate-fade-in">
+        <p className="text-2xl font-serif text-brown mb-3 opacity-70">
+          We're having trouble loading our products right now.
+        </p>
+        <p className="text-brown/50 mb-6">
+          Please try again in a moment or WhatsApp us directly to order.
+        </p>
+        <a
+          href={"https://wa.me/" + settings.whatsappNumber}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-green text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+        >
+          Order via WhatsApp
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-12">
+      {/* Category Filter Pills */}
+      <div className="flex flex-wrap justify-center gap-3 mb-12 animate-fade-up">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setActiveCategory(cat.id)}
+            className={"px-6 py-2 rounded-full font-bold transition-all duration-300 border-2 " + (
+              activeCategory === cat.id
+                ? "bg-orange border-orange text-white shadow-lg scale-105"
+                : "bg-white/50 border-brown/10 text-brown hover:border-orange/50 hover:bg-white"
+            )}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Product Grid */}
+      {filteredProducts.length === 0 ? (
+        <div className="text-center py-20 bg-white/50 backdrop-blur-sm rounded-3xl border border-brown/10 animate-fade-in shadow-inner">
+          <h2 className="text-2xl font-serif text-brown mb-2 opacity-70">
+            No items in this category yet.
+          </h2>
+          <p className="text-brown/50">
+            We&apos;re currently preparing fresh batches. Stay tuned!
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {filteredProducts.map((product, idx) => (
+            <div
+              key={product.id}
+              className="animate-fade-up"
+              style={{ animationDelay: `${idx * 50}ms` }}
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
+--- FILE: src\components\WhatsAppFAB.tsx ---
+"use client";
+
+import { useSettings } from "../context/SettingsContext";
+import { usePathname } from "next/navigation";
+
+export default function WhatsAppFAB() {
+  const settings = useSettings();
+  const pathname = usePathname();
+
+  // Hide on all admin pages â€” FAB overlaps the admin sidebar Logout button
+  if (pathname.startsWith("/admin")) return null;
+
+  const whatsappNumber = settings.whatsappNumber;
+
+  const message = encodeURIComponent(
+    "Hi Vishwasa, I would like to know more about your products."
+  );
+
+  return (
+    <a
+      href={`https://wa.me/${whatsappNumber}?text=${message}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-6 left-6 text-white p-4 rounded-full shadow-lg transition-all hover:-translate-y-1 z-50 flex items-center justify-center"
+      style={{ backgroundColor: "#25D366" }}
+      aria-label="Contact us on WhatsApp"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+      </svg>
+    </a>
+  );
+}
+
+
+
+--- FILE: src\config\settings.json ---
+{
+  "brandName": "Vishwasa Foods",
+  "heroTitle": "Our Traditional Sweets & Snacks",
+  "heroSubtitle": "Made with love, pure butter, and cold-pressed oils. No preservatives. No palm oil.",
+  "whatsappNumber": "918310236708",
+  "checkoutGreeting": "Hi Vishwasa, I would like to place an order:",
+  "deliveryWarning": "Please enter your name and delivery address to continue.",
+  "contactAddress": "123 Traditional Street, J.P. Nagar, Bengaluru, Karnataka 560078",
+  "contactEmail": "hello@vishwasa.com",
+  "footerAbout": "Mother's Trust, Nature's Best. We craft traditional recipes using premium ingredients, absolutely no palm oil, and 100% cold-pressed oils.",
+  "aboutTitle": "Our Story",
+  "aboutText": "Vishwasa was born out of a simple desire: to bring back the authentic taste of our grandmothers' kitchens. \nIn a world filled with mass-produced snacks using cheap palm oil and artificial preservatives, we decided to take a step back to our roots.",
+  "aboutFeature1Title": "Made with Love",
+  "aboutFeature1Desc": "Every batch is prepared with the exact same care and ingredients we use for our own family.",
+  "aboutFeature2Title": "No Compromise",
+  "aboutFeature2Desc": "0% Palm Oil. 0% Artificial Colors. We strictly use pure butter, desi ghee, and local cold-pressed oils.",
+  "aboutFeature3Title": "Authentic Taste",
+  "aboutFeature3Desc": "Following generations-old traditional recipes that capture the true essence of South India.",
+  "feature1Title": "No Palm Oil",
+  "feature1Desc": "Absolutely zero palm oil in any of our products.",
+  "feature2Title": "Cold Pressed Oils",
+  "feature2Desc": "Made exclusively using groundnut and sesame cold pressed oils.",
+  "feature3Title": "Butter Based",
+  "feature3Desc": "Authentic recipes made rich and melt-in-mouth with pure butter."
+}
+
+
+
+--- FILE: src\context\AuthContext.tsx ---
+"use client";
+
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+type AuthContextType = {
+  token: string | null;
+  isAuthenticated: boolean;
+  login: (password: string) => Promise<boolean>;
+  logout: () => void;
+};
+
+const AuthContext = createContext<AuthContextType>({
+  token: null,
+  isAuthenticated: false,
+  login: async () => false,
+  logout: () => {},
+});
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("admin_token");
+    const expiry = localStorage.getItem("admin_token_expiry");
+    if (storedToken && expiry) {
+      if (Date.now() > parseInt(expiry, 10)) {
+        // Session expired â€” clear immediately
+        localStorage.removeItem("admin_token");
+        localStorage.removeItem("admin_token_expiry");
+        router.push("/admin/login");
+      } else {
+        setToken(storedToken);
+      }
+    }
+  }, [router]);
+
+  const login = async (password: string) => {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        // Store the password as the token â€” it's used as Bearer token
+        // for authenticated API calls (settings, products, upload, setup).
+        // The password is already known to the admin user and is only
+        // sent over HTTPS to same-origin API routes.
+        setToken(password);
+        localStorage.setItem("admin_token", password);
+        localStorage.setItem(
+          "admin_token_expiry",
+          String(Date.now() + 8 * 60 * 60 * 1000)
+        );
+        return true;
+      }
+    } catch (e) {
+      console.error("Login failed:", e);
+    }
+    return false;
+  };
+
+  const logout = () => {
+    setToken(null);
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_token_expiry");
+    router.push("/admin/login");
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ token, isAuthenticated: !!token, login, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);
+
+
+
+--- FILE: src\context\CartContext.tsx ---
+"use client";
+
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+export type CartItem = {
+  id: string | number;
+  name: string;
+  price: string;
+  image_url: string;
+  quantity: number;
+};
+
+type CartContextType = {
+  cart: CartItem[];
+  addToCart: (item: Omit<CartItem, "quantity">) => void;
+  removeFromCart: (id: string | number) => void;
+  updateQuantity: (id: string | number, quantity: number) => void;
+  clearCart: () => void;
+  isCartOpen: boolean;
+  setIsCartOpen: (open: boolean) => void;
+};
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Load from local storage
+  useEffect(() => {
+    setMounted(true);
+    const savedCart = localStorage.getItem("vishwasa_cart");
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (e) {
+        setCart([]);
+      }
+    }
+  }, []);
+
+  // Sync to local storage
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem("vishwasa_cart", JSON.stringify(cart));
+    }
+  }, [cart, mounted]);
+
+  const addToCart = (newItem: Omit<CartItem, "quantity">) => {
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === newItem.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prev, { ...newItem, quantity: 1 }];
+    });
+    setIsCartOpen(true); // Auto-open cart when item is added
+  };
+
+  const removeFromCart = (id: string | number) => {
+    setCart((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const updateQuantity = (id: string | number, quantity: number) => {
+    if (quantity < 1) {
+      removeFromCart(id);
+      return;
+    }
+    setCart((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+    );
+  };
+
+  const clearCart = () => setCart([]);
+
+  return (
+    <CartContext.Provider
+      value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, isCartOpen, setIsCartOpen }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+export function useCart() {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
+  return context;
+}
+
+
+
+--- FILE: src\context\SettingsContext.tsx ---
+"use client";
+
+import { createContext, useContext, ReactNode } from "react";
+import defaultSettingsData from "../config/settings.json";
+
+export type WebsiteSettings = {
+  brandName: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  whatsappNumber: string;
+  checkoutGreeting: string;
+  deliveryWarning: string;
+  contactAddress: string;
+  contactEmail: string;
+  footerAbout: string;
+  aboutTitle?: string;
+  aboutText?: string;
+  aboutFeature1Title?: string;
+  aboutFeature1Desc?: string;
+  aboutFeature2Title?: string;
+  aboutFeature2Desc?: string;
+  aboutFeature3Title?: string;
+  aboutFeature3Desc?: string;
+  feature1Title?: string;
+  feature1Desc?: string;
+  feature2Title?: string;
+  feature2Desc?: string;
+  feature3Title?: string;
+  feature3Desc?: string;
+  [key: string]: string | undefined;
+};
+
+const defaultSettings: WebsiteSettings = defaultSettingsData;
+
+const SettingsContext = createContext<WebsiteSettings | undefined>(undefined);
+
+export function SettingsProvider({
+  children,
+  initialSettings,
+}: {
+  children: ReactNode;
+  initialSettings: Partial<WebsiteSettings>;
+}) {
+  const mergedSettings: WebsiteSettings = { ...defaultSettings, ...initialSettings };
+
+  return (
+    <SettingsContext.Provider value={mergedSettings}>
+      {children}
+    </SettingsContext.Provider>
+  );
+}
+
+export function useSettings(): WebsiteSettings {
+  const context = useContext(SettingsContext);
+  if (context === undefined) {
+    throw new Error("useSettings must be used within a SettingsProvider");
+  }
+  return context;
+}
+
+
+
+--- FILE: merge_code.ps1 ---
+$outputPath = "vishwasa_codebase_full.txt"
+if (Test-Path $outputPath) { Remove-Item $outputPath }
+$files = Get-ChildItem -Recurse -File -Exclude "vishwasa_codebase_full.txt", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.ico", "*.svg", "*.woff", "*.woff2", "*.ttf", "*.eot" | Where-Object { $_.FullName -notmatch "node_modules" -and $_.FullName -notmatch ".next" -and $_.FullName -notmatch ".git" }
+$sb = New-Object System.Text.StringBuilder
+foreach ($file in $files) {
+    $relativePath = $file.FullName.Replace("C:\Users\SS Foods\.gemini\antigravity\scratch\vishwasa-website\", "")
+    $sb.AppendLine("--- FILE: $relativePath ---") | Out-Null
+    $content = Get-Content $file.FullName -Raw
+    $sb.AppendLine($content) | Out-Null
+    $sb.AppendLine("`n") | Out-Null
+}
+$sb.ToString() | Out-File -FilePath $outputPath -Encoding utf8
+
+
+
+--- FILE: package.json ---
+{
+  "name": "vishwasa-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@vercel/blob": "^0.23.0",
+    "@vercel/postgres": "^0.8.0",
+    "lucide-react": "^0.378.0",
+    "next": "14.2.3",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
+
+
+
+--- FILE: postcss.config.mjs ---
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+
+
+--- FILE: tailwind.config.mjs ---
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        "orange-gold": "#e67e22",
+        "cream-light": "#fffdfa",
+        cream: "#ffe0b4",
+        brown: {
+          DEFAULT: "#874721",
+          light: "#a45b2f",
+          dark: "#3a1c0b",
+        },
+        green: {
+          DEFAULT: "#219348",
+          dark: "#1a7539",
+        },
+        orange: {
+          DEFAULT: "#f67000",
+          light: "#ff8522",
+        }
+      },
+      fontFamily: {
+        serif: ["var(--font-playfair)", "serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
+      }
+    },
+  },
+  plugins: [],
+};
+
+
+
+--- FILE: tsconfig.json ---
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+
+
+--- FILE: vercel.json ---
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs"
+}
+
+
+
+

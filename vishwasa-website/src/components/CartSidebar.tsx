@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
+import { X, Plus, Minus, ShoppingBag, Trash2, Package } from "lucide-react";
 import Image from "next/image";
 import { useSettings } from "../context/SettingsContext";
 import { useRouter } from "next/navigation";
@@ -143,8 +143,8 @@ export default function CartSidebar() {
                         className="object-contain p-2"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl">
-                        🍪
+                      <div className="w-full h-full flex items-center justify-center text-4xl text-brown/20">
+                        <Package size={32} strokeWidth={1} />
                       </div>
                     )}
                   </div>
@@ -216,14 +216,16 @@ export default function CartSidebar() {
                                   className="object-contain p-1"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-xl">🍪</div>
+                                <div className="w-full h-full flex items-center justify-center text-xl text-brown/20">
+                                  <Package size={24} strokeWidth={1} />
+                                </div>
                               )}
                             </div>
                             <p className="text-[10px] font-bold text-brown text-center line-clamp-2 leading-tight mb-1">
                               {p.name}
                             </p>
                             <p className="text-[10px] text-orange font-bold mb-2">
-                              &#8377;{p.price}
+                              {p.price}
                             </p>
                             <button
                               onClick={() =>
