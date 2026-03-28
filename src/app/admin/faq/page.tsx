@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { Plus, Trash2, Edit2, CheckCircle, X, HelpCircle, Loader2 } from "lucide-react";
 
 type FAQ = {
