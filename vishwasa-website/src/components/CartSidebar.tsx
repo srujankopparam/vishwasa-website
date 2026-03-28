@@ -106,6 +106,26 @@ export default function CartSidebar() {
             <X size={28} />
           </button>
         </div>
+        
+        {/* Progress Bar Section */}
+        {cart.length > 0 && (
+          <div className="px-6 py-4 bg-brown/5 border-b border-brown/10 animate-fade-in">
+            <div className="flex justify-between items-center mb-2">
+              <span className={`text-[10px] font-bold uppercase tracking-wider ${belowMin ? "text-brown/60" : "text-green-600"}`}>
+                {belowMin ? `Add ₹${remaining} more to unlock checkout` : "🎉 You're good to go!"}
+              </span>
+              <span className="text-[10px] font-bold text-brown/40">
+                ₹{total} / ₹240
+              </span>
+            </div>
+            <div className="h-2 w-full bg-brown/10 rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all duration-500 ease-out ${belowMin ? "bg-orange" : "bg-green-500"}`}
+                style={{ width: `${Math.min((total / MIN_ORDER) * 100, 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {cart.length === 0 ? (
