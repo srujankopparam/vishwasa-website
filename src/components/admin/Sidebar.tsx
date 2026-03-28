@@ -9,7 +9,8 @@ import {
   LogOut, 
   ExternalLink,
   Settings,
-  ChevronRight
+  ChevronRight,
+  HelpCircle
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "../../context/AuthContext";
@@ -21,6 +22,7 @@ export default function Sidebar() {
   const links = [
     { href: "/admin/content", icon: <FileText size={20} />, label: "Site Content" },
     { href: "/admin/products", icon: <Package size={20} />, label: "Product Catalog" },
+    { href: "/admin/faq", icon: <HelpCircle size={20} />, label: "FAQ Manager" },
   ];
 
   return (
