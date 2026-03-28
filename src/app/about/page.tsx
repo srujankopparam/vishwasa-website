@@ -16,29 +16,22 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-20">
-          <div className="text-center">
-            <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brown">
-              <Heart size={40} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-12">
+          {[
+            { icon: Heart, title: settings.aboutFeature1Title || "Made with Love", desc: settings.aboutFeature1Desc || "Every snack is crafted with care using age-old family recipes." },
+            { icon: ShieldCheck, title: settings.aboutFeature2Title || "No Compromise", desc: settings.aboutFeature2Desc || "Zero preservatives, zero palm oil. Only the purest ingredients." },
+            { icon: Target, title: settings.aboutFeature3Title || "Authentic Taste", desc: settings.aboutFeature3Desc || "True to traditional South Indian flavours, straight from our kitchen." },
+          ].map(({ icon: Icon, title, desc }, i) => (
+            <div key={i} className="text-center">
+              <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brown">
+                <Icon size={40} />
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-brown mb-4">{title}</h3>
+              <p className="text-brown/80 whitespace-pre-wrap">{desc}</p>
             </div>
-            <h3 className="font-serif text-2xl font-bold text-brown mb-4">{settings.aboutFeature1Title}</h3>
-            <p className="text-brown/80 whitespace-pre-wrap">{settings.aboutFeature1Desc}</p>
-          </div>
-          <div className="text-center">
-            <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brown">
-              <ShieldCheck size={40} />
-            </div>
-            <h3 className="font-serif text-2xl font-bold text-brown mb-4">{settings.aboutFeature2Title}</h3>
-            <p className="text-brown/80 whitespace-pre-wrap">{settings.aboutFeature2Desc}</p>
-          </div>
-          <div className="text-center">
-            <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brown">
-              <Target size={40} />
-            </div>
-            <h3 className="font-serif text-2xl font-bold text-brown mb-4">{settings.aboutFeature3Title}</h3>
-            <p className="text-brown/80 whitespace-pre-wrap">{settings.aboutFeature3Desc}</p>
-          </div>
+          ))}
         </div>
+
       </div>
     </div>
   );

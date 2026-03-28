@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, description, price, image_url, highlights, status, category } = body;
+    const { name, description, price, image_url, highlights, status, category, ingredients, shelf_life, storage, badge, is_featured, visibility } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -40,8 +40,8 @@ export async function POST(request: Request) {
     }
 
     const { rows } = await sql`
-      INSERT INTO products (name, description, price, image_url, highlights, status, category)
-      VALUES (${name}, ${description || ""}, ${price || ""}, ${image_url || ""}, ${highlights || ""}, ${status || "active"}, ${category || "savories"})
+      INSERT INTO products (name, description, price, image_url, highlights, status, category, ingredients, shelf_life, storage, badge, is_featured, visibility)
+      VALUES (${name}, ${description || ""}, ${price || ""}, ${image_url || ""}, ${highlights || ""}, ${status || "active"}, ${category || "savories"}, ${ingredients || ""}, ${shelf_life || ""}, ${storage || ""}, ${badge || "none"}, ${is_featured || false}, ${visibility || "active"})
       RETURNING *;
     `;
 
@@ -92,7 +92,7 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, name, description, price, image_url, highlights, status, category } = body;
+    const { id, name, description, price, image_url, highlights, status, category, ingredients, shelf_life, storage, badge, is_featured, visibility } = body;
 
     if (!id || !name) {
       return NextResponse.json(
@@ -110,7 +110,13 @@ export async function PUT(request: Request) {
         image_url = ${image_url || ""},
         highlights = ${highlights || ""},
         status = ${status || "active"},
-        category = ${category || "savories"}
+        category = ${category || "savories"},
+        ingredients = ${ingredients || ""},
+        shelf_life = ${shelf_life || ""},
+        storage = ${storage || ""},
+        badge = ${badge || "none"},
+        is_featured = ${is_featured || false},
+        visibility = ${visibility || "active"}
       WHERE id = ${id}
       RETURNING *;
     `;

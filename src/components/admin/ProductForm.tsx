@@ -19,6 +19,12 @@ type ProductInput = {
   highlights: string;
   status: string;
   category: string;
+  ingredients: string;
+  shelf_life: string;
+  storage: string;
+  badge: string;
+  is_featured: boolean;
+  visibility: string;
 };
 
 export default function ProductForm({
@@ -40,6 +46,12 @@ export default function ProductForm({
       highlights: "",
       status: "active",
       category: "savories",
+      ingredients: "",
+      shelf_life: "",
+      storage: "",
+      badge: "none",
+      is_featured: false,
+      visibility: "active",
     }
   );
   const [isDragging, setIsDragging] = useState(false);
@@ -209,6 +221,95 @@ export default function ProductForm({
                 }
                 className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Ingredients
+              </label>
+              <textarea
+                rows={3}
+                value={formData.ingredients}
+                onChange={(e) =>
+                  setFormData({ ...formData, ingredients: e.target.value })
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                  Shelf Life
+                </label>
+                <input
+                  value={formData.shelf_life}
+                  onChange={(e) =>
+                    setFormData({ ...formData, shelf_life: e.target.value })
+                  }
+                  className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                  placeholder="e.g. 30 days"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                  Storage Instructions
+                </label>
+                <input
+                  value={formData.storage}
+                  onChange={(e) =>
+                    setFormData({ ...formData, storage: e.target.value })
+                  }
+                  className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                  placeholder="e.g. Store in airtight container"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                  Badge
+                </label>
+                <select
+                  value={formData.badge}
+                  onChange={(e) =>
+                    setFormData({ ...formData, badge: e.target.value })
+                  }
+                  className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none bg-white font-medium"
+                >
+                  <option value="none">None</option>
+                  <option value="new">New</option>
+                  <option value="bestseller">Bestseller</option>
+                  <option value="limited">Limited Edition</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                  Visibility
+                </label>
+                <select
+                  value={formData.visibility}
+                  onChange={(e) =>
+                    setFormData({ ...formData, visibility: e.target.value })
+                  }
+                  className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none bg-white font-medium"
+                >
+                  <option value="active">Active</option>
+                  <option value="hidden">Hidden</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="is_featured"
+                checked={formData.is_featured}
+                onChange={(e) =>
+                  setFormData({ ...formData, is_featured: e.target.checked })
+                }
+                className="w-4 h-4 text-orange border-brown/20 rounded focus:ring-orange"
+              />
+              <label htmlFor="is_featured" className="text-sm font-bold text-brown/70 uppercase cursor-pointer">
+                Mark as Featured on Homepage
+              </label>
             </div>
           </div>
 

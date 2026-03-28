@@ -1,18 +1,16 @@
 "use client";
 
 import { useSettings } from "../context/SettingsContext";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppFAB() {
-  let whatsappNumber = "918310236708";
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const settings = useSettings();
-    if (settings?.whatsappNumber) {
-      whatsappNumber = settings.whatsappNumber;
-    }
-  } catch {
-    // Fall back to hardcoded number if context is unavailable
-  }
+  const settings = useSettings();
+  const pathname = usePathname();
+
+  // Hide on all admin pages — FAB overlaps the admin sidebar Logout button
+  if (pathname.startsWith("/admin")) return null;
+
+  const whatsappNumber = settings.whatsappNumber;
 
   const message = encodeURIComponent(
     "Hi Vishwasa, I would like to know more about your products."

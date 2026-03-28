@@ -22,6 +22,20 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "Only image files are allowed" },
+        { status: 400 }
+      );
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "File must be under 5MB" },
+        { status: 400 }
+      );
+    }
+
     const blob = await put(file.name, file, { access: "public" });
     return NextResponse.json({ url: blob.url });
   } catch (error) {

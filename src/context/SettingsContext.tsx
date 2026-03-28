@@ -13,6 +13,7 @@ export type WebsiteSettings = {
   contactAddress: string;
   contactEmail: string;
   footerAbout: string;
+  instagramHandle: string;
   aboutTitle?: string;
   aboutText?: string;
   aboutFeature1Title?: string;

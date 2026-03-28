@@ -41,8 +41,8 @@ export default function ProductManager() {
     });
   }, [products, searchQuery, filterCategory]);
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to permanently delete this product?")) return;
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
 
     try {
       const res = await fetch(`/api/products?id=${id}`, {
@@ -132,9 +132,9 @@ export default function ProductManager() {
                 className="flex-1 md:w-48 bg-cream/50 border border-brown/5 rounded-2xl py-3 px-4 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange/20 transition-all text-brown font-semibold"
               >
                 <option value="All">All Categories</option>
-                <option value="Savories">Savories</option>
-                <option value="Sweets">Sweets</option>
-                <option value="Limited Edition">Limited Edition</option>
+                <option value="savories">Savories</option>
+                <option value="sweets">Sweets</option>
+                <option value="limited">Limited Edition</option>
               </select>
             </div>
           </div>
@@ -165,8 +165,8 @@ export default function ProductManager() {
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl grayscale opacity-30">
-                      🍪
+                    <div className="w-full h-full flex items-center justify-center text-5xl text-brown/20">
+                      <Package size={64} strokeWidth={1} />
                     </div>
                   )}
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -197,7 +197,7 @@ export default function ProductManager() {
                       <span>Edit</span>
                     </button>
                     <button
-                      onClick={() => handleDelete(p.id)}
+                      onClick={() => handleDelete(p.id, p.name)}
                       className="bg-red-50/50 hover:bg-red-500 hover:text-white text-red-500 py-3.5 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all active:scale-95 border border-transparent hover:shadow-lg hover:shadow-red-500/20"
                     >
                       <Trash2 size={18} />
