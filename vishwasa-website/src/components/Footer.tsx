@@ -39,12 +39,12 @@ export default function Footer() {
               <li>{settings.contactEmail}</li>
               <li>
                 <a
-                  href="https://instagram.com/vishwasafoods"
+                  href={`https://instagram.com/${settings.instagramHandle.replace('@','')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-orange-light hover:text-cream transition-colors"
                 >
-                  @vishwasafoods
+                  {settings.instagramHandle}
                 </a>
               </li>
             </ul>

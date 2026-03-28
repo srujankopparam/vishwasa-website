@@ -288,6 +288,53 @@ export default function ContentEditor() {
           </div>
         </section>
 
+        {/* Checkout & Social */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            Checkout & Social
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                WhatsApp Checkout Greeting
+              </label>
+              <textarea
+                rows={2}
+                value={settingsData.checkoutGreeting || ""}
+                onChange={(e) =>
+                  handleSettingChange("checkoutGreeting", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Checkout Warning Text
+              </label>
+              <input
+                value={settingsData.deliveryWarning || ""}
+                onChange={(e) =>
+                  handleSettingChange("deliveryWarning", e.target.value)
+                }
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Instagram Handle
+              </label>
+              <input
+                value={settingsData.instagramHandle || ""}
+                onChange={(e) =>
+                  handleSettingChange("instagramHandle", e.target.value)
+                }
+                placeholder="@vishwasafoods"
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+              />
+            </div>
+          </div>
+        </section>
+
         {/* About Page */}
         <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
           <h2 className="text-xl font-bold mb-4 font-serif text-brown">
