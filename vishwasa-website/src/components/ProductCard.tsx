@@ -13,13 +13,23 @@ type ProductInput = {
   image_url: string;
   highlights: string;
   badge?: string;
+  ingredients?: string;
+  shelf_life?: string;
+  storage?: string;
+  category?: string;
+  is_featured?: boolean;
+  visibility?: string;
 };
+
+import ProductModal from "./ProductModal";
 
 export default function ProductCard({ product }: { product: ProductInput }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
     addToCart({
       id: product.id,
       name: product.name,
@@ -33,7 +43,11 @@ export default function ProductCard({ product }: { product: ProductInput }) {
   const highlights = product.highlights ? product.highlights.split(",") : [];
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-brown/10 flex flex-col hover:shadow-xl transition-shadow group">
+    <>
+      <div 
+        onClick={() => setIsModalOpen(true)}
+        className="bg-white rounded-2xl overflow-hidden shadow-lg border border-brown/10 flex flex-col hover:shadow-xl transition-shadow group cursor-pointer"
+      >
       <div className="relative h-64 bg-cream overflow-hidden">
         {product.image_url ? (
           <Image
@@ -107,7 +121,14 @@ export default function ProductCard({ product }: { product: ProductInput }) {
           )}
         </button>
       </div>
-    </div>
+      </div>
+      {isModalOpen && (
+        <ProductModal 
+          product={product} 
+          onClose={() => setIsModalOpen(false)} 
+        />
+      )}
+    </>
   );
 }
 
