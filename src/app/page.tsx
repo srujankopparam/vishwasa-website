@@ -2,6 +2,7 @@ import { sql } from "@vercel/postgres";
 import HomeHero from "../components/HomeHero";
 import ProductCard from "../components/ProductCard";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, MessageCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -68,11 +69,17 @@ export default async function Home() {
       <section className="py-24 bg-white border-y border-brown/5 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-square lg:aspect-video bg-cream rounded-[40px] flex items-center justify-center overflow-hidden border-2 border-dashed border-brown/10 group">
-              <div className="text-center">
-                <span className="font-serif text-3xl text-brown/20 italic">Our Kitchen</span>
+            <div className="relative aspect-square lg:aspect-video rounded-[40px] overflow-hidden shadow-2xl group border border-brown/5">
+              <Image
+                src="/kitchen-story.png"
+                alt="Vishwasa Traditional Kitchen"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-brown/40 to-transparent opacity-60" />
+              <div className="absolute bottom-6 left-8">
+                <span className="font-serif text-2xl text-white italic drop-shadow-md">Our Traditional Kitchen</span>
               </div>
-              <div className="absolute inset-0 bg-orange/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <div className="space-y-8">
               <div className="inline-block text-orange font-black text-xs uppercase tracking-widest bg-orange/5 px-4 py-2 rounded-full border border-orange/10">
