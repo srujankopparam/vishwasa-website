@@ -12,6 +12,7 @@ type ProductInput = {
   price: string;
   image_url: string;
   highlights: string;
+  badge?: string;
 };
 
 export default function ProductCard({ product }: { product: ProductInput }) {
@@ -45,6 +46,15 @@ export default function ProductCard({ product }: { product: ProductInput }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center text-6xl text-brown/20">
             <Package size={64} strokeWidth={1} />
+          </div>
+        )}
+        {product.badge && product.badge !== "none" && (
+          <div className={`absolute top-4 left-4 text-white px-3 py-1 rounded-full font-bold shadow-md uppercase text-[10px] tracking-widest z-10 ${
+            product.badge === "new" ? "bg-green-600" : 
+            product.badge === "bestseller" ? "bg-orange" : 
+            product.badge === "limited" ? "bg-[#874721]" : "bg-gray-500"
+          }`}>
+            {product.badge === "limited" ? "Limited Edition" : product.badge}
           </div>
         )}
         <div className="absolute top-4 right-4 bg-orange text-white px-3 py-1 rounded-full font-bold shadow-md">
