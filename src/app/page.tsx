@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   let featuredProducts: any[] = [];
-  let settings: any = {};
+  let initialSettings: any = {};
 
   try {
     const { rows: productRows } = await sql`
@@ -21,149 +21,177 @@ export default async function Home() {
     featuredProducts = productRows;
 
     const { rows: settingsRows } = await sql`SELECT key, value FROM website_settings;`;
-    settings = settingsRows.reduce(
+    initialSettings = settingsRows.reduce(
       (acc: Record<string, string>, row) => ({ ...acc, [row.key]: row.value }),
       {}
     );
   } catch (error) {
     console.error("Failed to fetch homepage data:", error);
     featuredProducts = [];
-    settings = {};
+    initialSettings = {};
   }
 
   return (
     <div className="flex flex-col min-h-screen">
       <HomeHero />
 
+      {/* Trust Strip */}
+      <div className="bg-brown py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: "FSSAI Licensed" },
+              { label: "No Preservatives" },
+              { label: "Ships Pan-India" },
+              { label: "Fresh Every Batch" },
+            ].map(({ label }) => (
+              <div key={label} 
+                className="flex items-center justify-center gap-2 text-cream">
+                <span className="text-sm font-semibold">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              { title: initialSettings.feature1Title || "No Palm Oil", desc: initialSettings.feature1Desc || "Absolutely zero palm oil in any of our products." },
+              { title: initialSettings.feature2Title || "Cold Pressed Oils", desc: initialSettings.feature2Desc || "Made exclusively using groundnut and sesame cold pressed oils." },
+              { title: initialSettings.feature3Title || "Butter Based", desc: initialSettings.feature3Desc || "Authentic recipes made rich and melt-in-mouth with pure butter." },
+            ].map((feature, i) => (
+              <div key={i} className="text-center group">
+                <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brown transition-transform group-hover:scale-110">
+                  <span className="font-serif text-3xl font-bold">{i + 1}</span>
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-brown mb-4">{feature.title}</h3>
+                <p className="text-brown/60 leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Featured Products */}
       {featuredProducts.length > 0 && (
-        <section className="py-20 bg-cream/20 md:py-32">
+        <section className="py-20 bg-cream/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="font-serif text-4xl sm:text-6xl font-black text-brown mb-4 tracking-tight">
-                Our Snacks
-              </h2>
-              <p className="text-xl text-brown/60 font-medium">
-                Traditional recipes, freshly prepared.
-              </p>
+              <h2 className="font-serif text-4xl font-bold text-brown mb-4">Our Snacks</h2>
+              <p className="text-lg text-brown/60">Traditional recipes, freshly prepared.</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
-            <div className="text-center mt-16">
+            <div className="text-center mt-12">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 bg-orange hover:bg-orange-light text-white font-black py-5 px-12 rounded-2xl shadow-xl shadow-orange/20 transition-all duration-300 hover:-translate-y-1"
+                className="inline-block bg-brown text-white font-bold py-4 px-10 rounded-full hover:bg-brown/90 transition-all"
               >
                 View Full Collection
-                <ArrowRight size={20} />
               </Link>
             </div>
           </div>
         </section>
       )}
 
-      {/* Story Preview Section */}
-      <section className="py-24 bg-white border-y border-brown/5 overflow-hidden">
+      {/* Section 1 — Story Preview */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-square lg:aspect-video rounded-[40px] overflow-hidden shadow-2xl group border border-brown/5">
-              <Image
-                src="/kitchen-story.png"
-                alt="Vishwasa Traditional Kitchen"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-brown/40 to-transparent opacity-60" />
-              <div className="absolute bottom-6 left-8">
-                <span className="font-serif text-2xl text-white italic drop-shadow-md">Our Traditional Kitchen</span>
+            <div className="bg-cream rounded-3xl h-80 lg:h-96 
+              flex items-center justify-center">
+              <div className="text-center text-brown/40">
+                <p className="font-serif text-2xl font-bold mb-2">
+                  Our Kitchen
+                </p>
+                <p className="text-sm">Photo coming soon</p>
               </div>
             </div>
-            <div className="space-y-8">
-              <div className="inline-block text-orange font-black text-xs uppercase tracking-widest bg-orange/5 px-4 py-2 rounded-full border border-orange/10">
+            <div>
+              <span className="text-orange font-bold uppercase 
+                tracking-widest text-sm">
                 Our Story
-              </div>
-              <h2 className="font-serif text-4xl sm:text-5xl font-black text-brown leading-tight">
-                Made the way it <span className="text-orange">used to be</span>
+              </span>
+              <h2 className="font-serif text-4xl font-bold 
+                text-brown mt-3 mb-6">
+                Made the way it used to be
               </h2>
-              <p className="text-xl text-brown/70 leading-relaxed font-medium whitespace-pre-wrap">
-                {settings.aboutText || "Bringing back the authentic taste of traditional kitchens."}
+              <p className="text-brown/70 leading-relaxed text-lg 
+                mb-8 whitespace-pre-wrap">
+                {initialSettings.aboutText || "Vishwasa was born out of a simple desire: to bring back the authentic taste of our grandmothers' kitchens. Better ingredients. No shortcuts. No compromise."}
               </p>
-              <div className="pt-4">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-3 text-brown font-black text-lg border-b-2 border-orange pb-2 hover:text-orange transition-colors"
-                >
-                  Read Our Full Story
-                  <ArrowRight size={24} className="text-orange" />
-                </Link>
-              </div>
+              <Link
+                href="/about"
+                className="inline-block border-2 border-brown 
+                  text-brown font-bold py-3 px-8 rounded-full 
+                  hover:bg-brown hover:text-cream transition-all duration-300"
+              >
+                Read Our Story
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Combo Psychology Section */}
-      <section className="py-24 bg-cream/10 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-screen h-full pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] bg-orange/5 blur-[120px] rounded-full" />
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <h2 className="font-serif text-4xl sm:text-5xl font-black text-brown">
-              Perfect for <span className="text-orange italic">Sharing</span>
-            </h2>
-            <p className="text-lg text-brown/60 font-medium">
-              Pick any 2 packs — that&apos;s all you need to place an order (min. ₹240)
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
-            {featuredProducts.slice(0, 2).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Link
-              href="/products"
-              className="bg-white hover:bg-brown hover:text-white text-brown font-black py-5 px-12 rounded-2xl border border-brown/10 shadow-lg shadow-brown/5 transition-all duration-300 flex-inline items-center gap-3"
-            >
-              Browse All Snacks
-            </Link>
-          </div>
+      {/* Section 2 — Combo Psychology */}
+      <section className="py-24 bg-cream/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 
+          text-center">
+          <h2 className="font-serif text-4xl sm:text-5xl font-bold 
+            text-brown mb-4">
+            Perfect for Sharing
+          </h2>
+          <p className="text-lg text-brown/60 mb-12 max-w-xl mx-auto">
+            Pick any 2 packs to place an order — minimum ₹240, 
+            delivered to your door.
+          </p>
+          {featuredProducts.length >= 2 && (
+            <div className="grid grid-cols-2 gap-6 
+              max-w-lg mx-auto mb-12">
+              {featuredProducts.slice(0, 2).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+          <Link
+            href="/products"
+            className="inline-block bg-orange hover:bg-orange-light 
+              text-white font-bold py-4 px-10 rounded-full shadow-lg 
+              hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+          >
+            Browse All Snacks
+          </Link>
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section className="py-24 bg-brown relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-cream blur-3xl rounded-full" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange blur-3xl rounded-full" />
-        </div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-10">
-          <h2 className="font-serif text-5xl sm:text-7xl font-black text-white leading-tight">
-            Ready to taste <br />
-            <span className="text-orange italic">real tradition?</span>
+      {/* Section 3 — Final CTA */}
+      <section className="py-24 bg-brown">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 
+          text-center">
+          <h2 className="font-serif text-4xl sm:text-5xl font-bold 
+            text-cream mb-4">
+            Ready to taste real tradition?
           </h2>
-          <p className="text-xl sm:text-2xl text-white/60 font-medium max-w-2xl mx-auto">
-            No preservatives. No palm oil. Just honest snacks, delivered fresh to your door.
+          <p className="text-cream/70 text-xl mb-10">
+            No preservatives. No palm oil. Just honest snacks.
           </p>
-          <div className="pt-6">
-            <a
-              href={`https://wa.me/${(settings.whatsappNumber || "").replace(/\D/g, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-4 bg-orange hover:bg-orange-light text-white font-black text-2xl py-6 px-12 rounded-3xl shadow-2xl shadow-orange/30 transition-all duration-300 hover:-translate-y-2 active:scale-95 group"
-            >
-              <MessageCircle size={32} className="fill-current group-hover:rotate-12 transition-transform" />
-              Order Now on WhatsApp
-            </a>
-          </div>
+          <a
+            href={`https://wa.me/${initialSettings.whatsappNumber || '918310236708'}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-orange hover:bg-orange-light 
+              text-white font-bold py-4 px-10 rounded-full shadow-xl 
+              hover:shadow-2xl hover:-translate-y-1 
+              transition-all duration-300 text-lg"
+          >
+            Order Now on WhatsApp
+          </a>
         </div>
       </section>
     </div>
