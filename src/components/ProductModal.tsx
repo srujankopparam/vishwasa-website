@@ -64,13 +64,13 @@ export default function ProductModal({ product, onClose }: { product: any; onClo
 
         <div className="flex flex-col md:flex-row">
           {/* Image Section */}
-          <div className="w-full md:w-1/2 h-64 md:h-[auto] min-h-[300px] relative bg-cream">
+          <div className="w-full md:w-1/2 h-64 md:h-auto min-h-[300px] md:min-h-[400px] relative bg-cream">
             {product.image_url ? (
               <Image
                 src={product.image_url}
                 alt={product.name}
                 fill
-                className="object-cover"
+                className="object-contain p-6"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-brown/20">
@@ -90,7 +90,7 @@ export default function ProductModal({ product, onClose }: { product: any; onClo
                 </div>
               )}
               <div className="bg-orange text-white px-4 py-1.5 rounded-full font-bold shadow-lg text-lg">
-                {product.price}
+                {isNaN(Number(product.price)) ? product.price : `₹${product.price}`}
               </div>
             </div>
           </div>
