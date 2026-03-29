@@ -81,11 +81,11 @@ export default function HomeHero() {
               <div className="absolute w-[420px] h-[420px] bg-orange/10 rounded-full blur-2xl" />
               <div className="relative w-[380px] h-[380px] sm:w-[450px] sm:h-[450px]">
                 <Image
-                  src="https://bteivfirliwnfd0c.public.blob.vercel-storage.com/IMG-20240929-WA0026-removebg-preview-9OGEORBT69QGzIjNVyT0FvojBUQqB0.jpg"
+                  src="https://i.ibb.co/LhYrtDfH/IMG-20240929-WA0026-removebg-preview.png"
                   alt="Vishwasa Traditional Snacks"
                   fill
                   priority
-                  className="object-contain hover:scale-105 transition-transform duration-700 mix-blend-multiply"
+                  className="object-contain hover:scale-105 transition-transform duration-700"
                 />
               </div>
             </div>
