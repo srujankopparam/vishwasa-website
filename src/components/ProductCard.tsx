@@ -72,16 +72,16 @@ export default function ProductCard({ product }: { product: ProductInput }) {
           </div>
         )}
         <div className="absolute top-4 right-4 bg-orange text-white px-3 py-1 rounded-full font-bold shadow-md">
-          {product.price}
+          {isNaN(Number(product.price)) ? product.price : `₹${product.price}`}
         </div>
       </div>
 
       <div className="p-6 flex-1 flex flex-col">
-        <h3 className="text-2xl font-serif font-bold text-brown mb-2">
+        <h3 className="text-2xl font-serif font-bold text-brown mb-2 min-h-[3.5rem] line-clamp-2">
           {product.name}
         </h3>
-        <p className="text-brown/70 mb-4 flex-1 line-clamp-3">
-          {product.description}
+        <p className="text-brown/60 mb-4 flex-1 line-clamp-2 text-sm leading-relaxed min-h-[2.5rem]">
+          {product.description || "Traditional South Indian snack made with cold-pressed oil and pure butter."}
         </p>
 
         {highlights.length > 0 && (
