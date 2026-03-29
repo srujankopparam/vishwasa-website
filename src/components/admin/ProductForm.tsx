@@ -76,6 +76,11 @@ export default function ProductForm({
       return;
     }
 
+    if (file.size > 4 * 1024 * 1024) {
+      alert("Image is too large. Please upload an image smaller than 4MB to meet Vercel limits.");
+      return;
+    }
+
     setUploading(true);
     try {
       const fd = new FormData();
@@ -85,7 +90,20 @@ export default function ProductForm({
         headers: { Authorization: `Bearer ${token}` },
         body: fd,
       });
-      const data = await res.json();
+      
+      const textResponse = await res.text();
+      let data;
+      try {
+        data = JSON.parse(textResponse);
+      } catch (parseError) {
+        // Handle cases where Vercel intercepts and returns HTML (like 413 Payload Too Large)
+        throw new Error(
+          res.status === 413 
+            ? "File is too large for the server to process."
+            : `Server returned an invalid format: ${textResponse.substring(0, 50)}...`
+        );
+      }
+
       if (res.ok) {
         setFormData((prev) => ({ ...prev, image_url: data.url }));
         if (data.warning) {
@@ -95,7 +113,7 @@ export default function ProductForm({
         alert(`Image upload failed: ${data.error || "Unknown server error"}`);
       }
     } catch (err: any) {
-      alert(`Image upload connection error: ${err.message || "Unknown error"}`);
+      alert(`Image upload error: ${err.message || "Unknown error"}`);
     } finally {
       setUploading(false);
     }
