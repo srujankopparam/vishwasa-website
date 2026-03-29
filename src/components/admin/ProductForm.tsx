@@ -88,11 +88,14 @@ export default function ProductForm({
       const data = await res.json();
       if (res.ok) {
         setFormData((prev) => ({ ...prev, image_url: data.url }));
+        if (data.warning) {
+          console.warn("Upload warning:", data.warning);
+        }
       } else {
-        alert("Image upload failed.");
+        alert(`Image upload failed: ${data.error || "Unknown server error"}`);
       }
-    } catch (err) {
-      alert("Image upload failed.");
+    } catch (err: any) {
+      alert(`Image upload connection error: ${err.message || "Unknown error"}`);
     } finally {
       setUploading(false);
     }

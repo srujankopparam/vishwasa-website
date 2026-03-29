@@ -36,12 +36,28 @@ export async function POST(request: Request) {
       );
     }
 
-    const blob = await put(file.name, file, { access: "public" });
-    return NextResponse.json({ url: blob.url });
-  } catch (error) {
+    try {
+      // Check if BLOB token exists, if not bypass to fallback immediately
+      if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        console.warn("BLOB_READ_WRITE_TOKEN is missing. Falling back to base64.");
+        throw new Error("BLOB_READ_WRITE_TOKEN is missing");
+      }
+      
+      const blob = await put(file.name, file, { access: "public" });
+      return NextResponse.json({ url: blob.url });
+    } catch (blobError: any) {
+      console.warn("Vercel Blob failed, falling back to base64 encoding", blobError);
+      
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+      
+      return NextResponse.json({ url: base64, warning: "Fell back to base64" });
+    }
+  } catch (error: any) {
     console.error("Upload failed:", error);
     return NextResponse.json(
-      { error: "Image upload failed" },
+      { error: error?.message || "Image upload failed" },
       { status: 500 }
     );
   }
