@@ -85,7 +85,7 @@ export default function HomeHero() {
                   alt="Vishwasa Traditional Snacks"
                   fill
                   priority
-                  className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                  className="object-contain hover:scale-105 transition-transform duration-700 mix-blend-multiply"
                 />
               </div>
             </div>
