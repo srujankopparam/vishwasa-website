@@ -32,6 +32,20 @@ export default function AboutPage() {
           ))}
         </div>
 
+        <div className="text-center mt-20 py-16 px-8 bg-cream rounded-3xl border border-brown/10">
+          <h3 className="font-serif text-3xl font-bold text-brown mb-4">
+            Taste the difference yourself
+          </h3>
+          <p className="text-brown/60 mb-8 max-w-md mx-auto leading-relaxed">
+            Traditional snacks made with better ingredients. Order fresh, delivered pan-India.
+          </p>
+          <a
+            href="/products"
+            className="inline-block bg-orange hover:bg-orange-light text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-lg"
+          >
+            Shop Our Snacks
+          </a>
+        </div>
       </div>
     </div>
   );
