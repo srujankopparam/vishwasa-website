@@ -27,6 +27,52 @@ type ProductInput = {
   visibility: string;
 };
 
+const compressImage = async (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 1200; // Resize to max 1200px width/height
+        
+        if (width > height && width > maxDim) {
+          height *= maxDim / width;
+          width = maxDim;
+        } else if (height > maxDim) {
+          width *= maxDim / height;
+          height = maxDim;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            // Keep original filename but use a compressed jpeg format
+            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { 
+              type: "image/jpeg", 
+              lastModified: Date.now() 
+            }));
+          } else {
+            // Fallback to original if compression fails
+            resolve(file);
+          }
+        }, "image/jpeg", 0.75); // 75% quality JPEG
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
+
 export default function ProductForm({
   initialData,
   onSave,
@@ -76,15 +122,19 @@ export default function ProductForm({
       return;
     }
 
-    if (file.size > 4 * 1024 * 1024) {
-      alert("Image is too large. Please upload an image smaller than 4MB to meet Vercel limits.");
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Image is too large. Please select an image smaller than 10MB.");
       return;
     }
 
     setUploading(true);
     try {
+      // Compress the image down so it easily passes Vercel's 4.5MB limits
+      const compressedFile = await compressImage(file);
+      
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", compressedFile);
+      
       const res = await fetch("/api/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -96,7 +146,6 @@ export default function ProductForm({
       try {
         data = JSON.parse(textResponse);
       } catch (parseError) {
-        // Handle cases where Vercel intercepts and returns HTML (like 413 Payload Too Large)
         throw new Error(
           res.status === 413 
             ? "File is too large for the server to process."
