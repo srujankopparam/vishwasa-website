@@ -54,26 +54,6 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Features Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {[
-              { title: initialSettings.feature1Title || "No Palm Oil", desc: initialSettings.feature1Desc || "Absolutely zero palm oil in any of our products." },
-              { title: initialSettings.feature2Title || "Cold Pressed Oils", desc: initialSettings.feature2Desc || "Made exclusively using groundnut and sesame cold pressed oils." },
-              { title: initialSettings.feature3Title || "Butter Based", desc: initialSettings.feature3Desc || "Authentic recipes made rich and melt-in-mouth with pure butter." },
-            ].map((feature, i) => (
-              <div key={i} className="text-center group">
-                <div className="bg-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brown transition-transform group-hover:scale-110">
-                  <span className="font-serif text-3xl font-bold">{i + 1}</span>
-                </div>
-                <h3 className="font-serif text-2xl font-bold text-brown mb-4">{feature.title}</h3>
-                <p className="text-brown/60 leading-relaxed">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Featured Products */}
       {featuredProducts.length > 0 && (
@@ -88,30 +68,84 @@ export default async function Home() {
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
-            <div className="text-center mt-12">
-              <Link
-                href="/products"
-                className="inline-block bg-brown text-white font-bold py-4 px-10 rounded-full hover:bg-brown/90 transition-all"
-              >
-                View Full Collection
-              </Link>
-            </div>
           </div>
         </section>
       )}
+
+      {/* How to Order */}
+      <section className="py-20 bg-white border-y border-brown/5">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-orange font-bold uppercase tracking-widest text-sm">
+              Simple Process
+            </span>
+            <h2 className="font-serif text-4xl font-bold text-brown mt-3">
+              How to Order
+            </h2>
+            <p className="text-brown/60 mt-3 max-w-lg mx-auto leading-relaxed">
+              No complicated checkout. Add snacks, fill your details, 
+              and confirm on WhatsApp. Done.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <div className="hidden md:block absolute top-10 left-[20%] right-[20%] h-px bg-orange/20 z-0" />
+            {[
+              {
+                step: "01",
+                title: "Add Snacks to Cart",
+                desc: "Browse our collection and add your favourites. Minimum order is ₹240 — usually 2 packs."
+              },
+              {
+                step: "02",
+                title: "Enter Your Details",
+                desc: "Fill in your name and full delivery address in the cart. We deliver pan-India."
+              },
+              {
+                step: "03",
+                title: "Confirm on WhatsApp",
+                desc: "Tap the WhatsApp button. We confirm your order and dispatch within 1-2 business days."
+              }
+            ].map((item, i) => (
+              <div key={i} className="relative z-10 flex flex-col items-center text-center p-6">
+                <div className="w-20 h-20 bg-orange rounded-full flex items-center justify-center mb-6 shadow-xl shadow-orange/20">
+                  <span className="text-white font-bold text-xl font-serif">{item.step}</span>
+                </div>
+                <h3 className="font-serif text-xl font-bold text-brown mb-3">{item.title}</h3>
+                <p className="text-brown/60 leading-relaxed text-sm max-w-xs mx-auto">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Section 1 — Story Preview */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="bg-cream rounded-3xl h-80 lg:h-96 
-              flex items-center justify-center">
-              <div className="text-center text-brown/40">
-                <p className="font-serif text-2xl font-bold mb-2">
-                  Our Kitchen
-                </p>
-                <p className="text-sm">Photo coming soon</p>
+            <div className="bg-cream rounded-3xl h-80 lg:h-96 p-6 flex flex-col items-center justify-center gap-4">
+              <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
+                {featuredProducts.slice(0, 4).map((product: any) => (
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-2xl overflow-hidden aspect-square relative shadow-sm border border-brown/5"
+                  >
+                    {product.image_url ? (
+                      <Image
+                        src={product.image_url}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-cream-light" />
+                    )}
+                  </div>
+                ))}
               </div>
+              <p className="text-brown/40 text-xs font-bold uppercase tracking-widest text-center">
+                Fresh from our kitchen
+              </p>
             </div>
             <div>
               <span className="text-orange font-bold uppercase 
@@ -151,10 +185,9 @@ export default async function Home() {
             Pick any 2 packs to place an order — minimum ₹240, 
             delivered to your door.
           </p>
-          {featuredProducts.length >= 2 && (
-            <div className="grid grid-cols-2 gap-6 
-              max-w-lg mx-auto mb-12">
-              {featuredProducts.slice(0, 2).map((product) => (
+          {featuredProducts.length > 0 && (
+            <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto mb-12">
+              {featuredProducts.slice(0, 4).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
@@ -167,6 +200,33 @@ export default async function Home() {
           >
             Browse All Snacks
           </Link>
+        </div>
+      </section>
+
+      {/* Bulk Orders */}
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-cream rounded-[40px] p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 border border-brown/10">
+            <div>
+              <span className="text-orange font-bold uppercase tracking-widest text-xs">
+                Bulk & Corporate
+              </span>
+              <h3 className="font-serif text-3xl font-bold text-brown mt-2 mb-3">
+                Ordering for office or events?
+              </h3>
+              <p className="text-brown/60 max-w-md leading-relaxed">
+                We offer bulk pricing and custom packaging for corporate gifting, office snack boxes, and festive hampers. Minimum 10 packs.
+              </p>
+            </div>
+            <a
+              href={`https://wa.me/${initialSettings.whatsappNumber || '918310236708'}?text=${encodeURIComponent('Hi Vishwasa, I am interested in bulk or corporate ordering. Please share details.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 bg-brown hover:bg-brown-dark text-cream font-bold py-4 px-8 rounded-full transition-all duration-300 hover:-translate-y-1 shadow-lg text-center whitespace-nowrap"
+            >
+              WhatsApp for Bulk Pricing
+            </a>
+          </div>
         </div>
       </section>
 

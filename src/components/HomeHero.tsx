@@ -23,103 +23,73 @@ export default function HomeHero() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center bg-[#fff8f0] overflow-hidden pt-20">
-        {/* Subtle decorative elements */}
-        <div className="absolute top-20 right-[-10%] w-[40%] h-[60%] bg-orange/5 blur-[120px] rounded-full pointer-events-none animate-pulse" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[50%] bg-brown/5 blur-[100px] rounded-full pointer-events-none" />
+      <section className="relative min-h-[90vh] flex items-center bg-cream py-20 overflow-hidden">
+        {/* Background blobs */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-orange/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-brown/5 blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left: Content */}
-            <div className="text-left space-y-8 animate-fade-up">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange/10 border border-orange/20 rounded-full text-orange font-bold text-xs uppercase tracking-widest shadow-sm">
-                <Heart size={14} fill="currentColor" />
-                Trusted by 500+ Families
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            {/* Left side — text */}
+            <div className="flex flex-col items-start">
               
-              <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl font-black text-brown leading-[1.1] tracking-tight">
-                {settings.heroTitle.split(' ').map((word, i) => (
-                  <span key={i} className={i === settings.heroTitle.split(' ').length - 1 ? "text-orange block sm:inline" : "block sm:inline"}>
-                    {word}{' '}
-                  </span>
-                ))}
-              </h1>
+              {/* FSSAI badge — honest, no fake numbers */}
+              <div className="flex items-center gap-2 bg-white border border-brown/10 rounded-full px-4 py-2 mb-8 shadow-sm">
+                <span className="text-green text-sm">✓</span>
+                <span className="text-brown/70 text-sm font-semibold uppercase tracking-widest">
+                  FSSAI Certified · Made Fresh
+                </span>
+              </div>
 
-              <p className="text-lg sm:text-xl text-brown/70 max-w-xl leading-relaxed whitespace-pre-wrap font-medium">
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-brown mb-6 leading-tight whitespace-pre-wrap animate-fade-up">
+                {settings.heroTitle}
+              </h1>
+              
+              <p className="text-lg sm:text-xl text-brown/70 mb-10 max-w-lg leading-relaxed whitespace-pre-wrap animate-fade-up">
                 {settings.heroSubtitle}
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 animate-fade-up">
                 <Link
                   href="/products"
-                  className="bg-orange hover:bg-orange-light text-white font-bold py-5 px-10 rounded-2xl shadow-xl shadow-orange/20 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-3 group text-lg"
+                  className="bg-orange hover:bg-orange-light text-white font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-center text-lg"
                 >
-                  <ShoppingBag size={22} className="group-hover:rotate-12 transition-transform" />
-                  Order Fresh Now
+                  Shop Our Snacks
                 </Link>
                 <Link
                   href="/about"
-                  className="bg-white hover:bg-cream-light text-brown font-bold py-5 px-10 rounded-2xl border border-brown/10 shadow-sm transition-all duration-300 flex items-center justify-center gap-3 text-lg"
+                  className="border-2 border-brown/30 hover:border-brown text-brown font-bold py-4 px-10 rounded-full transition-all duration-300 text-center text-lg hover:bg-brown/5"
                 >
-                  Our Story
-                  <ArrowRight size={20} className="text-orange" />
+                  Our Story →
                 </Link>
               </div>
 
-              {/* Quick Trust Badges */}
-              <div className="flex flex-wrap gap-6 pt-8 border-t border-brown/5">
-                <div className="flex items-center gap-2 text-brown/60">
-                  <ShieldCheck size={20} className="text-green" />
-                  <span className="text-xs font-bold uppercase tracking-wider">FSSAI Certified</span>
-                </div>
-                <div className="flex items-center gap-2 text-brown/60">
-                  <Leaf size={20} className="text-green" />
-                  <span className="text-xs font-bold uppercase tracking-wider">0% Palm Oil</span>
-                </div>
+              {/* Small trust pills below buttons */}
+              <div className="flex flex-wrap gap-3 mt-8">
+                {["No Palm Oil", "Cold Pressed Oils", "Pure Butter", "No Preservatives"].map((label) => (
+                  <span key={label} className="bg-white border border-brown/10 text-brown/70 text-xs font-semibold px-4 py-2 rounded-full shadow-sm">
+                    {label}
+                  </span>
+                ))}
               </div>
             </div>
 
-            {/* Right: Floating Image */}
-            <div className="relative group animate-fade-up [animation-delay:300ms]">
-              <div className="relative aspect-square max-w-[550px] mx-auto">
-                {/* Decorative circular backgrounds */}
-                <div className="absolute inset-0 bg-cream rounded-[60px] rotate-6 scale-95 opacity-50 group-hover:rotate-12 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-orange/10 rounded-[60px] -rotate-3 scale-95 group-hover:-rotate-6 transition-transform duration-700" />
-                
-                {/* Main Product Image Container */}
-                <div className="absolute inset-0 bg-white shadow-2xl rounded-[60px] flex items-center justify-center border border-brown/5 overflow-hidden">
-                  <Image 
-                    src="https://images.unsplash.com/photo-1626082866744-32fe3b0276d9?q=80&w=800&auto=format&fit=crop" 
-                    alt="Traditional Indian Snacks"
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-[1.5s]"
-                    priority
-                  />
-                  
-                  {/* Floating floating card 1 */}
-                  <div className="absolute bottom-8 -left-8 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-float border border-brown/5">
-                    <div className="w-12 h-12 bg-green/10 rounded-full flex items-center justify-center text-green">
-                      <Leaf size={24} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-brown/40 uppercase tracking-widest">Natural</p>
-                      <p className="text-sm font-bold text-brown leading-none">Cold Pressed Oils</p>
-                    </div>
-                  </div>
-
-                  {/* Floating floating card 2 */}
-                  <div className="absolute top-12 -right-8 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-float-delayed border border-brown/5">
-                    <div className="w-12 h-12 bg-orange/10 rounded-full flex items-center justify-center text-orange">
-                      <Heart size={24} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-brown/40 uppercase tracking-widest">Quality</p>
-                      <p className="text-sm font-bold text-brown leading-none">Butter Based</p>
-                    </div>
-                  </div>
-                </div>
+            {/* Right side — product image */}
+            <div className="relative flex items-center justify-center animate-fade-in">
+              {/* Warm circular background */}
+              <div className="absolute w-[420px] h-[420px] bg-orange/10 rounded-full blur-2xl" />
+              <div className="relative w-[380px] h-[380px] sm:w-[450px] sm:h-[450px]">
+                <Image
+                  src="https://bteivfirliwnfd0c.public.blob.vercel-storage.com/IMG-20240929-WA0026-removebg-preview-9OGEORBT69QGzIjNVyT0FvojBUQqB0.jpg"
+                  alt="Vishwasa Traditional Snacks"
+                  fill
+                  priority
+                  className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                />
               </div>
             </div>
+
           </div>
         </div>
       </section>
