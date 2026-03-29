@@ -291,12 +291,17 @@ export default function CartSidebar() {
                   placeholder="Full Delivery Address"
                   value={address}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAddress(e.target.value)}
-                  className="w-full bg-brown/5 border border-brown/10 rounded-xl px-4 py-3 text-brown placeholder:text-brown/40 h-24 resize-none focus:outline-none focus:border-orange-gold transition-all"
+                  className="w-full bg-brown/5 border border-brown/10 rounded-xl px-4 py-3 text-brown placeholder:text-brown/40 h-16 resize-none focus:outline-none focus:border-orange-gold transition-all"
                 />
               </div>
-              <p className="text-[10px] uppercase font-bold text-brown/40 tracking-widest text-center">
-                {settings.deliveryWarning}
-              </p>
+              <div className="space-y-1 text-center">
+                <p className="text-[10px] uppercase font-bold text-brown/40 tracking-widest">
+                  {settings.deliveryWarning}
+                </p>
+                <p className="text-[10px] text-brown/40 font-medium">
+                  🚚 Shipped via India Post · Delivered in 5–7 business days
+                </p>
+              </div>
             </div>
 
             <div className="flex justify-between items-center mb-6 px-2">
