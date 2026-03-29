@@ -38,7 +38,7 @@ export default function Navbar() {
               className="object-contain transition-all duration-300" 
             />
             <span className={`font-serif font-bold text-brown tracking-tight transition-all duration-300 ${
-              scrolled ? "text-xl" : "text-3xl"
+              scrolled ? "text-xl" : "text-2xl"
             }`}>
               {settings.brandName}
             </span>

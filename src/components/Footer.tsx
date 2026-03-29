@@ -36,8 +36,20 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-lg mb-4 text-orange-light">Contact</h4>
             <ul className="space-y-2 text-cream/80">
-              <li className="whitespace-pre-wrap">{settings.contactAddress}</li>
+              <li className="whitespace-pre-wrap">
+                {settings.contactAddress || "Bangalore, Karnataka, India"}
+              </li>
               <li>{settings.contactEmail}</li>
+              <li>
+                <a
+                  href={`https://wa.me/${settings.whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-light hover:text-cream transition-colors"
+                >
+                  WhatsApp: +{settings.whatsappNumber}
+                </a>
+              </li>
               <li>
                 <a
                   href={`https://instagram.com/${settings.instagramHandle.replace('@','')}`}
