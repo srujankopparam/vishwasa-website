@@ -38,7 +38,7 @@ export default async function Home() {
       {/* Trust Strip */}
       <div className="bg-brown py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {[
               { label: "FSSAI Licensed" },
               { label: "No Preservatives" },
@@ -46,8 +46,8 @@ export default async function Home() {
               { label: "Fresh Every Batch" },
             ].map(({ label }) => (
               <div key={label} 
-                className="flex items-center justify-center gap-2 text-cream">
-                <span className="text-sm font-semibold">{label}</span>
+                className="flex items-center justify-center gap-1 md:gap-2 text-cream">
+                <span className="text-xs md:text-sm font-semibold text-center">{label}</span>
               </div>
             ))}
           </div>
@@ -57,7 +57,7 @@ export default async function Home() {
 
       {/* Featured Products */}
       {featuredProducts.length > 0 && (
-        <section className="py-20 bg-cream/20">
+        <section className="py-10 md:py-20 bg-cream/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="font-serif text-4xl font-bold text-brown mb-4">Our Snacks</h2>
@@ -73,9 +73,9 @@ export default async function Home() {
       )}
 
       {/* How to Order */}
-      <section className="py-20 bg-white border-y border-brown/5">
+      <section className="py-12 md:py-20 bg-white border-y border-brown/5">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <span className="text-orange font-bold uppercase tracking-widest text-sm">
               Simple Process
             </span>
@@ -108,8 +108,8 @@ export default async function Home() {
               }
             ].map((item, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center p-6">
-                <div className="w-20 h-20 bg-orange rounded-full flex items-center justify-center mb-6 shadow-xl shadow-orange/20">
-                  <span className="text-white font-bold text-xl font-serif">{item.step}</span>
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-orange rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-xl shadow-orange/20">
+                  <span className="text-white font-bold text-lg md:text-xl font-serif">{item.step}</span>
                 </div>
                 <h3 className="font-serif text-xl font-bold text-brown mb-3">{item.title}</h3>
                 <p className="text-brown/60 leading-relaxed text-sm max-w-xs mx-auto">{item.desc}</p>
@@ -120,10 +120,10 @@ export default async function Home() {
       </section>
 
       {/* Section 1 — Story Preview */}
-      <section className="py-24 bg-white">
+      <section className="py-12 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="bg-cream rounded-3xl h-80 lg:h-96 p-6 flex flex-col items-center justify-center gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
+            <div className="bg-cream rounded-3xl h-64 md:h-80 lg:h-96 p-4 md:p-6 flex flex-col items-center justify-center gap-3">
               <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
                 {featuredProducts.slice(0, 4).map((product: any) => (
                   <div
@@ -174,11 +174,10 @@ export default async function Home() {
       </section>
 
       {/* Section 2 — Combo Psychology */}
-      <section className="py-24 bg-cream/30">
+      <section className="py-12 md:py-24 bg-cream/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 
           text-center">
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold 
-            text-brown mb-4">
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-brown mb-3 md:mb-4">
             Perfect for Sharing
           </h2>
           <p className="text-lg text-brown/60 mb-12 max-w-xl mx-auto">
@@ -204,14 +203,14 @@ export default async function Home() {
       </section>
 
       {/* Bulk Orders */}
-      <section className="py-16 bg-white">
+      <section className="py-10 md:py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-cream rounded-[40px] p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 border border-brown/10">
+          <div className="bg-cream rounded-[32px] p-7 md:p-14 flex flex-col md:flex-row items-center justify-between gap-6 border border-brown/10">
             <div>
               <span className="text-orange font-bold uppercase tracking-widest text-xs">
                 Bulk & Corporate
               </span>
-              <h3 className="font-serif text-3xl font-bold text-brown mt-2 mb-3">
+              <h3 className="font-serif text-2xl md:text-3xl font-bold text-brown mt-2 mb-2 md:mb-3">
                 Ordering for office or events?
               </h3>
               <p className="text-brown/60 max-w-md leading-relaxed">
@@ -222,7 +221,7 @@ export default async function Home() {
               href={`https://wa.me/${initialSettings.whatsappNumber || '918310236708'}?text=${encodeURIComponent('Hi Vishwasa, I am interested in bulk or corporate ordering. Please share details.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 bg-brown hover:bg-brown-dark text-cream font-bold py-4 px-8 rounded-full transition-all duration-300 hover:-translate-y-1 shadow-lg text-center whitespace-nowrap"
+              className="w-full md:w-auto shrink-0 bg-brown hover:bg-brown-dark text-cream font-bold py-4 px-8 rounded-full transition-all duration-300 hover:-translate-y-1 shadow-lg text-center"
             >
               WhatsApp for Bulk Pricing
             </a>
@@ -231,14 +230,13 @@ export default async function Home() {
       </section>
 
       {/* Section 3 — Final CTA */}
-      <section className="py-24 bg-brown">
+      <section className="py-14 md:py-24 bg-brown">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 
           text-center">
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold 
-            text-cream mb-4">
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-cream mb-3 md:mb-4">
             Ready to taste real tradition?
           </h2>
-          <p className="text-cream/70 text-xl mb-10">
+          <p className="text-cream/70 text-base md:text-xl mb-6 md:mb-10">
             No preservatives. No palm oil. Just honest snacks.
           </p>
           <a
