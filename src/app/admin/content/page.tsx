@@ -150,6 +150,41 @@ export default function ContentEditor() {
           </div>
         </section>
 
+        {/* Announcement Banner */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown flex items-center gap-2">
+            📢 Announcement Banner
+          </h2>
+          <p className="text-sm text-brown/50 mb-4">
+            Show a banner across the top of the website. Leave text empty to hide it.
+          </p>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Banner Text (leave empty to hide)
+              </label>
+              <input
+                value={settingsData.announcementText || ""}
+                onChange={(e) => handleSettingChange("announcementText", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                placeholder="e.g. 🎉 Free delivery on orders above ₹500 this week!"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="announcementActive"
+                checked={settingsData.announcementActive === "true"}
+                onChange={(e) => handleSettingChange("announcementActive", e.target.checked ? "true" : "false")}
+                className="w-5 h-5 accent-orange"
+              />
+              <label htmlFor="announcementActive" className="text-sm font-bold text-brown/70">
+                Show banner on website
+              </label>
+            </div>
+          </div>
+        </section>
+
         {/* Homepage Hero */}
         <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
           <h2 className="text-xl font-bold mb-4 font-serif text-brown">
@@ -186,6 +221,38 @@ export default function ContentEditor() {
                 className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
               />
             </div>
+          </div>
+        </section>
+
+        {/* Hero Image */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-2 font-serif text-brown">
+            Hero Image
+          </h2>
+          <p className="text-sm text-brown/50 mb-4">
+            The product image shown on the right side of the homepage hero. Upload your image to imgbb.com and paste the direct link here.
+          </p>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Image URL
+              </label>
+              <input
+                value={settingsData.heroImageUrl || ""}
+                onChange={(e) => handleSettingChange("heroImageUrl", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                placeholder="https://i.ibb.co/..."
+              />
+            </div>
+            {settingsData.heroImageUrl && (
+              <div className="mt-2 w-32 h-32 relative rounded-xl overflow-hidden bg-cream border border-brown/10">
+                <img 
+                  src={settingsData.heroImageUrl} 
+                  alt="Hero preview"
+                  className="w-full h-full object-contain p-2"
+                />
+              </div>
+            )}
           </div>
         </section>
 
@@ -263,6 +330,289 @@ export default function ContentEditor() {
                 placeholder="Description"
                 className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
               />
+            </div>
+          </div>
+        </section>
+
+        {/* Trust Strip Badges */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            Trust Strip Badges
+          </h2>
+          <p className="text-sm text-brown/50 mb-4">
+            The 4 badges shown in the brown strip below the hero.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            {["trustBadge1","trustBadge2","trustBadge3","trustBadge4"].map((key, i) => (
+              <div key={key}>
+                <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                  Badge {i + 1}
+                </label>
+                <input
+                  value={settingsData[key] || ""}
+                  onChange={(e) => handleSettingChange(key, e.target.value)}
+                  className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* How to Order Section */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            How to Order Section
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">Section Heading</label>
+              <input
+                value={settingsData.howToOrderTitle || ""}
+                onChange={(e) => handleSettingChange("howToOrderTitle", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">Section Subtext</label>
+              <input
+                value={settingsData.howToOrderSubtext || ""}
+                onChange={(e) => handleSettingChange("howToOrderSubtext", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+              />
+            </div>
+            <div className="grid md:grid-cols-3 gap-6 pt-4 border-t border-brown/10">
+              {[
+                {t:"step1Title",d:"step1Desc",label:"Step 1"},
+                {t:"step2Title",d:"step2Desc",label:"Step 2"},
+                {t:"step3Title",d:"step3Desc",label:"Step 3"},
+              ].map(({t, d, label}) => (
+                <div key={t} className="space-y-2">
+                  <h3 className="font-bold text-brown">{label}</h3>
+                  <input
+                    value={settingsData[t] || ""}
+                    onChange={(e) => handleSettingChange(t, e.target.value)}
+                    placeholder="Step title"
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                  <textarea
+                    rows={3}
+                    value={settingsData[d] || ""}
+                    onChange={(e) => handleSettingChange(d, e.target.value)}
+                    placeholder="Step description"
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Homepage Sections Text */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            Homepage Sections Text
+          </h2>
+          <div className="space-y-6">
+            
+            <div className="pb-4 border-b border-brown/10">
+              <h3 className="font-bold text-brown mb-3">Story Preview</h3>
+              <div className="grid md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-brown/50 uppercase mb-1">Label</label>
+                  <input
+                    value={settingsData.storyLabel || ""}
+                    onChange={(e) => handleSettingChange("storyLabel", e.target.value)}
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-brown/50 uppercase mb-1">Heading</label>
+                  <input
+                    value={settingsData.storyHeading || ""}
+                    onChange={(e) => handleSettingChange("storyHeading", e.target.value)}
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-brown/50 uppercase mb-1">Button Text</label>
+                  <input
+                    value={settingsData.storyButtonText || ""}
+                    onChange={(e) => handleSettingChange("storyButtonText", e.target.value)}
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="pb-4 border-b border-brown/10">
+              <h3 className="font-bold text-brown mb-3">
+                Perfect for Sharing (Combo Section)
+              </h3>
+              <div className="grid md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-brown/50 uppercase mb-1">Heading</label>
+                  <input
+                    value={settingsData.comboHeading || ""}
+                    onChange={(e) => handleSettingChange("comboHeading", e.target.value)}
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-brown/50 uppercase mb-1">Subtext</label>
+                  <input
+                    value={settingsData.comboSubtext || ""}
+                    onChange={(e) => handleSettingChange("comboSubtext", e.target.value)}
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-brown/50 uppercase mb-1">Button Text</label>
+                  <input
+                    value={settingsData.comboButtonText || ""}
+                    onChange={(e) => handleSettingChange("comboButtonText", e.target.value)}
+                    className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="pb-4 border-b border-brown/10">
+              <h3 className="font-bold text-brown mb-3">
+                Bulk Orders Section
+              </h3>
+              <div className="space-y-2">
+                <input
+                  value={settingsData.bulkHeading || ""}
+                  onChange={(e) => handleSettingChange("bulkHeading", e.target.value)}
+                  placeholder="Section heading"
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                />
+                <textarea
+                  rows={2}
+                  value={settingsData.bulkSubtext || ""}
+                  onChange={(e) => handleSettingChange("bulkSubtext", e.target.value)}
+                  placeholder="Section subtext"
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                />
+                <input
+                  value={settingsData.bulkButtonText || ""}
+                  onChange={(e) => handleSettingChange("bulkButtonText", e.target.value)}
+                  placeholder="Button text"
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-brown mb-3">
+                Final CTA Section (Dark Brown)
+              </h3>
+              <div className="space-y-2">
+                <input
+                  value={settingsData.ctaHeading || ""}
+                  onChange={(e) => handleSettingChange("ctaHeading", e.target.value)}
+                  placeholder="CTA heading"
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                />
+                <input
+                  value={settingsData.ctaSubtext || ""}
+                  onChange={(e) => handleSettingChange("ctaSubtext", e.target.value)}
+                  placeholder="CTA subtext"
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                />
+                <input
+                  value={settingsData.ctaButtonText || ""}
+                  onChange={(e) => handleSettingChange("ctaButtonText", e.target.value)}
+                  placeholder="Button text"
+                  className="w-full border border-brown/20 rounded-lg px-3 py-2 text-sm focus:border-orange focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Orders & Delivery Settings */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            Orders & Delivery
+          </h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Minimum Order Amount (₹)
+              </label>
+              <input
+                type="number"
+                value={settingsData.minOrderAmount || "240"}
+                onChange={(e) => handleSettingChange("minOrderAmount", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+              />
+              <p className="text-xs text-brown/40 mt-1">
+                Cart checkout unlocks above this amount
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Delivery Info Text
+              </label>
+              <input
+                value={settingsData.deliveryInfo || ""}
+                onChange={(e) => handleSettingChange("deliveryInfo", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                placeholder="Shipped via India Post · 5-7 days"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Business Hours
+              </label>
+              <input
+                value={settingsData.businessHours || ""}
+                onChange={(e) => handleSettingChange("businessHours", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                placeholder="Mon–Sat: 9AM to 6PM IST"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* SEO Settings */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-brown/10">
+          <h2 className="text-xl font-bold mb-4 font-serif text-brown">
+            SEO Settings
+          </h2>
+          <p className="text-sm text-brown/50 mb-4">
+            Controls how your site appears in Google search results.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Page Title (shown in browser tab and Google)
+              </label>
+              <input
+                value={settingsData.seoTitle || ""}
+                onChange={(e) => handleSettingChange("seoTitle", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                placeholder="Vishwasa - Traditional South Indian Snacks"
+              />
+              <p className="text-xs text-brown/40 mt-1">
+                Keep under 60 characters for best results
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-brown/70 uppercase mb-1">
+                Meta Description (shown in Google results)
+              </label>
+              <textarea
+                rows={2}
+                value={settingsData.seoDescription || ""}
+                onChange={(e) => handleSettingChange("seoDescription", e.target.value)}
+                className="w-full border border-brown/20 rounded-xl px-4 py-2 focus:border-orange focus:outline-none"
+                placeholder="Mother's Trust, Nature's Best..."
+              />
+              <p className="text-xs text-brown/40 mt-1">
+                Keep under 160 characters for best results
+              </p>
             </div>
           </div>
         </section>
