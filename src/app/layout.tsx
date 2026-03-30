@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import CartFAB from "../components/CartFAB";
-import CartSidebar from "../components/CartSidebar";
-import WhatsAppFAB from "../components/WhatsAppFAB";
+import ClientLayoutWrapper from "../components/ClientLayoutWrapper";
 import { CartProvider } from "../context/CartContext";
 import { SettingsProvider } from "../context/SettingsContext";
 import { sql } from "@vercel/postgres";
@@ -50,12 +46,9 @@ export default async function RootLayout({
       >
         <SettingsProvider initialSettings={initialSettings}>
           <CartProvider>
-            <Navbar />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-            <CartFAB />
-            <CartSidebar />
-            <WhatsAppFAB />
+            <ClientLayoutWrapper>
+              {children}
+            </ClientLayoutWrapper>
           </CartProvider>
         </SettingsProvider>
       </body>
