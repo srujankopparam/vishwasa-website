@@ -55,7 +55,7 @@ export default function ProductCard({ product }: { product: ProductInput }) {
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, 25vw"
-            className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+            className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-6xl text-brown/20">

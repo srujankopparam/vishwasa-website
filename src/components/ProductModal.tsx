@@ -70,7 +70,7 @@ export default function ProductModal({ product, onClose }: { product: any; onClo
                 src={product.image_url}
                 alt={product.name}
                 fill
-                className="object-contain p-6"
+                className="object-contain mix-blend-multiply p-2"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-brown/20">

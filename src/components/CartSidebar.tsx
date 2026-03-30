@@ -160,7 +160,7 @@ export default function CartSidebar() {
                         alt={item.name}
                         fill
                         sizes="96px"
-                        className="object-contain p-2"
+                        className="object-contain mix-blend-multiply"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-4xl text-brown/20">
@@ -233,7 +233,7 @@ export default function CartSidebar() {
                                   alt={p.name}
                                   fill
                                   sizes="48px"
-                                  className="object-contain p-1"
+                                  className="object-contain mix-blend-multiply"
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-xl text-brown/20">
