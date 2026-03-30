@@ -63,7 +63,7 @@ export default async function Home() {
               <h2 className="font-serif text-4xl font-bold text-brown mb-4">Our Snacks</h2>
               <p className="text-lg text-brown/60">Traditional recipes, freshly prepared.</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-8">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -185,7 +185,7 @@ export default async function Home() {
             delivered to your door.
           </p>
           {featuredProducts.length > 0 && (
-            <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto mb-12">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto mb-12">
               {featuredProducts.slice(0, 4).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
