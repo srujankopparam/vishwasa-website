@@ -135,7 +135,7 @@ export default async function Home() {
                         src={product.image_url}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                        className="object-contain p-2"
                       />
                     ) : (
                       <div className="w-full h-full bg-cream-light" />

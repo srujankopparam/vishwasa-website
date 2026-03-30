@@ -162,7 +162,7 @@ export default function ProductManager() {
                       alt={p.name}
                       fill
                       sizes="(max-width: 640px) 100vw, 33vw"
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="object-contain p-6 group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-5xl text-brown/20">
