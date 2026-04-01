@@ -48,20 +48,22 @@ export default function ProductCard({ product }: { product: ProductInput }) {
         onClick={() => setIsModalOpen(true)}
         className="bg-white rounded-2xl overflow-hidden shadow-lg border border-brown/10 flex flex-col hover:shadow-xl transition-shadow group cursor-pointer"
       >
-      <div className="relative h-48 sm:h-64 bg-cream overflow-hidden">
-        {product.image_url ? (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, 25vw"
-            className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl text-brown/20">
-            <Package className="w-12 h-12 sm:w-16 sm:h-16" strokeWidth={1} />
-          </div>
-        )}
+      <div className="relative h-48 sm:h-64 bg-cream p-3 sm:p-4">
+        <div className="relative w-full h-full bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-brown/10 overflow-hidden group-hover:shadow-[0_4px_15px_rgba(0,0,0,0.1)] transition-shadow duration-500">
+          {product.image_url ? (
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, 25vw"
+              className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-6xl text-brown/20">
+              <Package className="w-12 h-12 sm:w-16 sm:h-16" strokeWidth={1} />
+            </div>
+          )}
+        </div>
         {product.badge && product.badge !== "none" && (
           <div className={`absolute top-2 left-2 sm:top-4 sm:left-4 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-bold shadow-md uppercase text-[8px] sm:text-[10px] tracking-widest z-10 ${
             product.badge === "new" ? "bg-green-600" : 

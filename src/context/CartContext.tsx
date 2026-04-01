@@ -57,7 +57,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...newItem, quantity: 1 }];
     });
-    setIsCartOpen(true); // Auto-open cart when item is added
+    // Auto-open is disabled to allow adding multiple items
+    // setIsCartOpen(true); 
   };
 
   const removeFromCart = (id: string | number) => {

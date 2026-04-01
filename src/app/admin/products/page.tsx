@@ -155,20 +155,22 @@ export default function ProductManager() {
                 className="group bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-orange/10 border border-brown/5 transition-all duration-500 flex flex-col animate-fade-up"
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
-                <div className="h-60 bg-cream relative overflow-hidden">
-                  {p.image_url ? (
-                    <Image
-                      src={p.image_url}
-                      alt={p.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      className="object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl text-brown/20">
-                      <Package size={64} strokeWidth={1} />
-                    </div>
-                  )}
+                <div className="h-60 bg-cream relative p-4">
+                  <div className="relative w-full h-full bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-brown/10 overflow-hidden group-hover:shadow-[0_4px_15px_rgba(0,0,0,0.1)] transition-shadow duration-500">
+                    {p.image_url ? (
+                      <Image
+                        src={p.image_url}
+                        alt={p.name}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 33vw"
+                        className="object-contain p-2 group-hover:scale-110 transition-transform duration-700"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-5xl text-brown/20">
+                        <Package size={64} strokeWidth={1} />
+                      </div>
+                    )}
+                  </div>
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
                     {p.category && (
                       <span className="bg-orange/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">

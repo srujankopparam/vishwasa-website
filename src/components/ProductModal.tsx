@@ -64,19 +64,21 @@ export default function ProductModal({ product, onClose }: { product: any; onClo
 
         <div className="flex flex-col md:flex-row">
           {/* Image Section */}
-          <div className="w-full md:w-1/2 h-64 md:h-auto min-h-[300px] md:min-h-[400px] relative bg-cream">
-            {product.image_url ? (
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                fill
-                className="object-contain mix-blend-multiply p-2"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-brown/20">
-                <Package size={80} strokeWidth={1} />
-              </div>
-            )}
+          <div className="w-full md:w-1/2 min-h-[300px] md:min-h-[400px] relative bg-cream p-6 md:p-8 rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
+            <div className="relative w-full h-full min-h-[250px] md:min-h-[340px] bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-brown/10 overflow-hidden">
+              {product.image_url ? (
+                <Image
+                  src={product.image_url}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-4"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-brown/20 bg-cream/30">
+                  <Package size={80} strokeWidth={1} />
+                </div>
+              )}
+            </div>
             
             {/* Badges on Image */}
             <div className="absolute top-6 left-6 flex flex-col gap-2">
