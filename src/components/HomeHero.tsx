@@ -21,52 +21,52 @@ export default function HomeHero() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] md:min-h-[90vh] flex items-center bg-cream py-12 md:py-20 overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center bg-cream pt-20 lg:pt-24 pb-10 lg:pb-12 overflow-hidden">
         {/* Background blobs */}
         <div className="absolute top-0 right-0 w-1/2 h-full bg-orange/5 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-brown/5 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
             {/* Left side — text */}
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
               
               {/* FSSAI badge — honest, no fake numbers */}
-              <div className="flex items-center gap-2 bg-white border border-brown/10 rounded-full px-4 py-2 mb-8 shadow-sm">
+              <div className="inline-flex items-center gap-2 bg-white border border-brown/10 rounded-full px-4 py-2 mb-4 lg:mb-6 shadow-sm animate-fade-up">
                 <span className="text-green text-sm">✓</span>
-                <span className="text-brown/70 text-sm font-semibold uppercase tracking-widest">
+                <span className="text-brown/70 text-xs sm:text-sm font-semibold uppercase tracking-widest">
                   FSSAI Certified · Made Fresh
                 </span>
               </div>
 
-              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold text-brown mb-4 md:mb-6 leading-tight whitespace-pre-wrap animate-fade-up">
+              <h1 className="font-serif text-[2.5rem] sm:text-6xl lg:text-7xl font-bold text-brown mb-3 lg:mb-6 leading-[1.1] whitespace-pre-wrap animate-fade-up">
                 {settings.heroTitle}
               </h1>
               
-              <p className="text-base sm:text-xl text-brown/70 mb-6 md:mb-10 max-w-lg leading-relaxed whitespace-pre-wrap animate-fade-up">
+              <p className="text-base sm:text-xl text-brown/70 mb-6 lg:mb-10 max-w-lg leading-relaxed whitespace-pre-wrap animate-fade-up">
                 {settings.heroSubtitle}
               </p>
 
-              <div className="flex flex-col gap-3 w-full sm:flex-row sm:w-auto animate-fade-up">
+              <div className="flex flex-col gap-3 w-full sm:flex-row sm:w-auto animate-fade-up mb-8">
                 <Link
                   href="/products"
-                  className="bg-orange hover:bg-orange-light text-white font-bold py-3 md:py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-center text-base md:text-lg w-full sm:w-auto"
+                  className="bg-orange hover:bg-orange-light text-white font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-center text-base md:text-lg w-full sm:w-auto"
                 >
                   Shop Our Snacks
                 </Link>
                 <Link
                   href="/about"
-                  className="border-2 border-brown/30 hover:border-brown text-brown font-bold py-3 md:py-4 px-10 rounded-full transition-all duration-300 text-center text-base md:text-lg hover:bg-brown/5 w-full sm:w-auto"
+                  className="border-2 border-brown/30 hover:border-brown text-brown font-bold py-4 px-10 rounded-full transition-all duration-300 text-center text-base md:text-lg hover:bg-brown/5 w-full sm:w-auto"
                 >
                   Our Story →
                 </Link>
               </div>
 
               {/* Small trust pills below buttons */}
-              <div className="flex flex-wrap gap-2 mt-6 md:mt-8">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-10 lg:mb-0">
                 {["No Palm Oil", "Cold Pressed Oils", "Pure Butter", "No Preservatives"].map((label) => (
-                  <span key={label} className="bg-white border border-brown/10 text-brown/70 text-xs font-semibold px-3 py-1.5 md:px-4 md:py-2 rounded-full shadow-sm">
+                  <span key={label} className="bg-white border border-brown/10 text-brown/70 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                     {label}
                   </span>
                 ))}
@@ -74,16 +74,16 @@ export default function HomeHero() {
             </div>
 
             {/* Right side — product image */}
-            <div className="relative flex items-center justify-center animate-fade-in mt-4 md:mt-0">
+            <div className="relative flex items-center justify-center animate-fade-in order-first lg:order-last mb-6 lg:mb-0">
               {/* Warm circular background */}
-              <div className="absolute w-[280px] h-[280px] md:w-[420px] md:h-[420px] bg-orange/10 rounded-full blur-2xl" />
-              <div className="relative w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[450px] md:h-[450px]">
+              <div className="absolute w-[260px] h-[260px] sm:w-[400px] sm:h-[400px] lg:w-[420px] lg:h-[420px] bg-orange/10 rounded-full blur-2xl" />
+              <div className="relative w-[240px] h-[240px] sm:w-[350px] sm:h-[350px] lg:w-[450px] lg:h-[450px]">
                 <Image
                   src="https://i.ibb.co/LhYrtDfH/IMG-20240929-WA0026-removebg-preview.png"
                   alt="Vishwasa Traditional Snacks"
                   fill
                   priority
-                  className="object-contain hover:scale-105 transition-transform duration-700"
+                  className="object-contain hover:scale-110 transition-transform duration-1000"
                 />
               </div>
             </div>

@@ -13,7 +13,7 @@ export default function CartFAB() {
   return (
     <button
       onClick={() => setIsCartOpen(true)}
-      className="fixed bottom-6 right-6 bg-brown text-cream p-4 rounded-full shadow-2xl hover:bg-orange transition-all hover:scale-110 z-40 border-4 border-cream flex items-center justify-center group"
+      className="fixed bottom-24 md:bottom-6 right-4 md:right-6 bg-brown text-cream p-4 rounded-full shadow-2xl hover:bg-orange transition-all hover:scale-110 z-40 border-4 border-cream flex items-center justify-center group"
       aria-label="Open Shopping Cart"
     >
       <ShoppingBag size={28} />

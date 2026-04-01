@@ -21,7 +21,7 @@ export default function WhatsAppFAB() {
       href={`https://wa.me/${whatsappNumber}?text=${message}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 left-6 text-white p-4 rounded-full shadow-lg transition-all hover:-translate-y-1 z-50 flex items-center justify-center"
+      className="fixed bottom-24 md:bottom-6 left-4 md:left-6 text-white p-3 md:p-4 rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 z-[200] flex items-center justify-center"
       style={{ backgroundColor: "#25D366" }}
       aria-label="Contact us on WhatsApp"
     >
