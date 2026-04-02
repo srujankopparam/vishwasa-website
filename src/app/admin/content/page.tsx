@@ -29,14 +29,14 @@ export default function ContentEditor() {
 
   // Warn before leaving with unsaved changes
   useEffect(() => {
-    if (hasUnsavedChanges) {
-      window.onbeforeunload = () => "You have unsaved changes.";
-    } else {
-      window.onbeforeunload = null;
-    }
-    return () => {
-      window.onbeforeunload = null;
+    const handler = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
     };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
   }, [hasUnsavedChanges]);
 
   const handleSettingChange = (key: string, value: string) => {

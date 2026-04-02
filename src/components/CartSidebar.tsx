@@ -7,7 +7,10 @@ import Image from "next/image";
 import { useSettings } from "../context/SettingsContext";
 import { useRouter } from "next/navigation";
 
-const MIN_ORDER = 240;
+const parsePrice = (priceStr: string): number => {
+  const match = priceStr.match(/\d+/);
+  return match ? parseInt(match[0]) : 0;
+};
 
 export default function CartSidebar() {
   const {
@@ -20,39 +23,36 @@ export default function CartSidebar() {
     clearCart,
   } = useCart();
   const settings = useSettings();
+  const MIN_ORDER = parseInt(settings.minOrderAmount || "240", 10);
   const router = useRouter();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
   const [upsellLoading, setUpsellLoading] = useState(false);
 
-  const parsePrice = (priceStr: string) => {
-    const match = priceStr.match(/\d+/);
-    return match ? parseInt(match[0]) : 0;
-  };
-
   const total = cart.reduce(
     (sum: number, item: any) => sum + parsePrice(item.price) * item.quantity,
     0
   );
 
-  const cartIds = new Set(cart.map((item: any) => item.id));
   const remaining = MIN_ORDER - total;
   const belowMin = total < MIN_ORDER;
 
-  // Fetch upsell products when cart is open and below minimum
   useEffect(() => {
     if (!isCartOpen || cart.length === 0 || !belowMin) return;
     setUpsellLoading(true);
+    const currentCartIds = new Set(cart.map((item: any) => item.id));
     fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
         const all: any[] = data.products || [];
-        setUpsellProducts(all.filter((p: any) => !cartIds.has(p.id)).slice(0, 10));
+        setUpsellProducts(
+          all.filter((p: any) => !currentCartIds.has(p.id)).slice(0, 10)
+        );
       })
-      .catch(() => {/* fail silently */})
+      .catch(() => {})
       .finally(() => setUpsellLoading(false));
-  }, [isCartOpen, cart.length, belowMin]); // eslint-disable-line
+  }, [isCartOpen, cart, belowMin]);
 
   const handleCheckout = () => {
     if (belowMin) return;
@@ -75,6 +75,8 @@ export default function CartSidebar() {
     window.open("https://wa.me/" + cleanNumber + "?text=" + encodedText, "_blank");
     clearCart();
     setIsCartOpen(false);
+    setName("");
+    setAddress("");
   };
 
   const overlayClass = isCartOpen

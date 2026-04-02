@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
-import { Menu, X, Bell } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, logout } = useAuth();

@@ -52,7 +52,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href={`https://instagram.com/${settings.instagramHandle.replace('@','')}`}
+                  href={`https://instagram.com/${(settings.instagramHandle || '').replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-orange-light hover:text-cream transition-colors"

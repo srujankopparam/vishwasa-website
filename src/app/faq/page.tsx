@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDown, HelpCircle, Loader2 } from "lucide-react";
+import { useSettings } from "../../context/SettingsContext";
 
 type FAQ = {
   id: number;
@@ -11,6 +12,7 @@ type FAQ = {
 };
 
 export default function FAQPage() {
+  const settings = useSettings();
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [openId, setOpenId] = useState<number | null>(null);
@@ -94,7 +96,7 @@ export default function FAQPage() {
           <h3 className="text-white font-serif text-2xl mb-4 relative z-10">Still have questions?</h3>
           <p className="text-white/60 mb-8 relative z-10">We&apos;re here to help you bring tradition to your table.</p>
           <a
-            href="https://wa.me/918310236708?text=Hi%20Vishwasa%2C%20I%20have%20a%20question%20about%20your%20products."
+            href={`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent("Hi Vishwasa, I have a question about your products.")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-orange hover:bg-orange-light text-white font-black py-4 px-10 rounded-2xl transition-all relative z-10 shadow-xl shadow-orange/20 flex items-center gap-2 mx-auto w-fit"

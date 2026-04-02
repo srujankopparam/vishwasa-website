@@ -11,10 +11,11 @@ export default function ProductModal({ product, onClose }: { product: any; onClo
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
     setIsVisible(true);
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = originalOverflow;
     };
   }, []);
 

@@ -3,7 +3,17 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+function isAuthenticated(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  return authHeader.split(" ")[1] === process.env.ADMIN_PASSWORD;
+}
+
+export async function GET(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const products = [
       { name: "Kodubale", price: "₹120" },

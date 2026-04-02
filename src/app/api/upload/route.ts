@@ -37,22 +37,26 @@ export async function POST(request: Request) {
     }
 
     try {
-      // Check if BLOB token exists, if not bypass to fallback immediately
       if (!process.env.BLOB_READ_WRITE_TOKEN) {
-        console.warn("BLOB_READ_WRITE_TOKEN is missing. Falling back to base64.");
-        throw new Error("BLOB_READ_WRITE_TOKEN is missing");
+        return NextResponse.json(
+          {
+            error:
+              "Image hosting is not configured. Please add BLOB_READ_WRITE_TOKEN to your Vercel environment variables, or upload your image to imgbb.com and paste the direct link into the Image URL field in the product form.",
+          },
+          { status: 503 }
+        );
       }
-      
       const blob = await put(file.name, file, { access: "public" });
       return NextResponse.json({ url: blob.url });
     } catch (blobError: any) {
-      console.warn("Vercel Blob failed, falling back to base64 encoding", blobError);
-      
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
-      
-      return NextResponse.json({ url: base64, warning: "Fell back to base64" });
+      console.error("Vercel Blob upload failed:", blobError);
+      return NextResponse.json(
+        {
+          error:
+            "Image upload failed. Please try again, or upload your image to imgbb.com and paste the direct link into the Image URL field instead.",
+        },
+        { status: 500 }
+      );
     }
   } catch (error: any) {
     console.error("Upload failed:", error);

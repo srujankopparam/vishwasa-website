@@ -40,11 +40,11 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {[
-              { label: "FSSAI Licensed" },
-              { label: "No Preservatives" },
-              { label: "Ships Pan-India" },
-              { label: "Fresh Every Batch" },
-            ].map(({ label }) => (
+              initialSettings.trustBadge1 || "FSSAI Licensed",
+              initialSettings.trustBadge2 || "No Preservatives",
+              initialSettings.trustBadge3 || "Ships Pan-India",
+              initialSettings.trustBadge4 || "Fresh Every Batch",
+            ].map((label) => (
               <div key={label} 
                 className="flex items-center justify-center gap-1 md:gap-2 text-cream">
                 <span className="text-xs md:text-sm font-semibold text-center">{label}</span>
@@ -80,11 +80,10 @@ export default async function Home() {
               Simple Process
             </span>
             <h2 className="font-serif text-4xl font-bold text-brown mt-3">
-              How to Order
+              {initialSettings.howToOrderTitle || "How to Order"}
             </h2>
             <p className="text-brown/60 mt-3 max-w-lg mx-auto leading-relaxed">
-              No complicated checkout. Add snacks, fill your details, 
-              and confirm on WhatsApp. Done.
+              {initialSettings.howToOrderSubtext || "No complicated checkout. Add snacks, fill your details, and confirm on WhatsApp. Done."}
             </p>
           </div>
 
@@ -93,18 +92,18 @@ export default async function Home() {
             {[
               {
                 step: "01",
-                title: "Add Snacks to Cart",
-                desc: "Browse our collection and add your favourites. Minimum order is ₹240 — usually 2 packs."
+                title: initialSettings.step1Title || "Add Snacks to Cart",
+                desc: initialSettings.step1Desc || "Browse our collection and add your favourites. Minimum order is ₹240 — usually 2 packs."
               },
               {
                 step: "02",
-                title: "Enter Your Details",
-                desc: "Fill in your name and full delivery address in the cart. We deliver pan-India."
+                title: initialSettings.step2Title || "Enter Your Details",
+                desc: initialSettings.step2Desc || "Fill in your name and full delivery address in the cart. We deliver pan-India."
               },
               {
                 step: "03",
-                title: "Confirm on WhatsApp",
-                desc: "Tap the WhatsApp button. We confirm your order and dispatch within 1-2 business days."
+                title: initialSettings.step3Title || "Confirm on WhatsApp",
+                desc: initialSettings.step3Desc || "Tap the WhatsApp button. We confirm your order and dispatch within 1-2 business days."
               }
             ].map((item, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center p-6">
@@ -154,7 +153,7 @@ export default async function Home() {
               </span>
               <h2 className="font-serif text-4xl font-bold 
                 text-brown mt-3 mb-6">
-                Made the way it used to be
+                {initialSettings.storyHeading || "Made the way it used to be"}
               </h2>
               <p className="text-brown/70 leading-relaxed text-lg 
                 mb-8 whitespace-pre-wrap">
@@ -166,7 +165,7 @@ export default async function Home() {
                   text-brown font-bold py-3 px-8 rounded-full 
                   hover:bg-brown hover:text-cream transition-all duration-300"
               >
-                Read Our Story
+                {initialSettings.storyButtonText || "Read Our Story"}
               </Link>
             </div>
           </div>
@@ -178,11 +177,10 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 
           text-center">
           <h2 className="font-serif text-3xl sm:text-5xl font-bold text-brown mb-3 md:mb-4">
-            Perfect for Sharing
+            {initialSettings.comboHeading || "Perfect for Sharing"}
           </h2>
           <p className="text-lg text-brown/60 mb-12 max-w-xl mx-auto">
-            Pick any 2 packs to place an order — minimum ₹240, 
-            delivered to your door.
+            {initialSettings.comboSubtext || "Pick any 2 packs to place an order — minimum ₹240, delivered to your door."}
           </p>
           {featuredProducts.length > 0 && (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto mb-12">
@@ -197,7 +195,7 @@ export default async function Home() {
               text-white font-bold py-4 px-10 rounded-full shadow-lg 
               hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
-            Browse All Snacks
+            {initialSettings.comboButtonText || "Browse All Snacks"}
           </Link>
         </div>
       </section>
@@ -211,19 +209,19 @@ export default async function Home() {
                 Bulk & Corporate
               </span>
               <h3 className="font-serif text-2xl md:text-3xl font-bold text-brown mt-2 mb-2 md:mb-3">
-                Ordering for office or events?
+                {initialSettings.bulkHeading || "Ordering for office or events?"}
               </h3>
               <p className="text-brown/60 max-w-md leading-relaxed">
-                We offer bulk pricing and custom packaging for corporate gifting, office snack boxes, and festive hampers. Minimum 10 packs.
+                {initialSettings.bulkSubtext || "We offer bulk pricing and custom packaging for corporate gifting, office snack boxes, and festive hampers. Minimum 10 packs."}
               </p>
             </div>
             <a
-              href={`https://wa.me/${initialSettings.whatsappNumber || '918310236708'}?text=${encodeURIComponent('Hi Vishwasa, I am interested in bulk or corporate ordering. Please share details.')}`}
+              href={`https://wa.me/${initialSettings.whatsappNumber || ''}?text=${encodeURIComponent('Hi Vishwasa, I am interested in bulk or corporate ordering. Please share details.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full md:w-auto shrink-0 bg-brown hover:bg-brown-dark text-cream font-bold py-4 px-8 rounded-full transition-all duration-300 hover:-translate-y-1 shadow-lg text-center"
             >
-              WhatsApp for Bulk Pricing
+              {initialSettings.bulkButtonText || "WhatsApp for Bulk Pricing"}
             </a>
           </div>
         </div>
@@ -234,13 +232,13 @@ export default async function Home() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 
           text-center">
           <h2 className="font-serif text-3xl sm:text-5xl font-bold text-cream mb-3 md:mb-4">
-            Ready to taste real tradition?
+            {initialSettings.ctaHeading || "Ready to taste real tradition?"}
           </h2>
           <p className="text-cream/70 text-base md:text-xl mb-6 md:mb-10">
-            No preservatives. No palm oil. Just honest snacks.
+            {initialSettings.ctaSubtext || "No preservatives. No palm oil. Just honest snacks."}
           </p>
           <a
-            href={`https://wa.me/${initialSettings.whatsappNumber || '918310236708'}`}
+            href={`https://wa.me/${initialSettings.whatsappNumber || ''}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-orange hover:bg-orange-light 
@@ -248,7 +246,7 @@ export default async function Home() {
               hover:shadow-2xl hover:-translate-y-1 
               transition-all duration-300 text-lg"
           >
-            Order Now on WhatsApp
+            {initialSettings.ctaButtonText || "Order Now on WhatsApp"}
           </a>
         </div>
       </section>

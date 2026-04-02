@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import CartFAB from "./CartFAB";
 import CartSidebar from "./CartSidebar";
 import WhatsAppFAB from "./WhatsAppFAB";
+import AnnouncementBanner from "./AnnouncementBanner";
 
 export default function ClientLayoutWrapper({
   children,
@@ -17,6 +18,7 @@ export default function ClientLayoutWrapper({
 
   return (
     <>
+      {!isAdmin && <AnnouncementBanner />}
       {!isAdmin && <Navbar />}
       <main className="flex-grow">{children}</main>
       {!isAdmin && (

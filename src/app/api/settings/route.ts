@@ -1,6 +1,8 @@
 import { sql } from "@vercel/postgres";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 function isAuthenticated(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) return false;

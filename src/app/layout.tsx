@@ -12,11 +12,29 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
-export const metadata: Metadata = {
-  title: "Vishwasa - Traditional South Indian Snacks",
-  description:
-    "Mother's Trust, Nature's Best. Traditional recipes made with better ingredients, no palm oil, and cold-pressed oils.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const { rows } = await sql`
+      SELECT key, value FROM website_settings
+      WHERE key IN ('seoTitle', 'seoDescription');
+    `;
+    const s: Record<string, string> = (rows as any).reduce(
+      (acc: Record<string, string>, row: any) => ({ ...acc, [row.key]: row.value }),
+      {}
+    );
+    return {
+      title: s["seoTitle"] || "Vishwasa - Traditional South Indian Snacks",
+      description:
+        s["seoDescription"] ||
+        "Mother's Trust, Nature's Best. Traditional recipes made with better ingredients, no palm oil, and cold-pressed oils.",
+    };
+  } catch {
+    return {
+      title: "Vishwasa - Traditional South Indian Snacks",
+      description: "Mother's Trust, Nature's Best.",
+    };
+  }
+}
 
 export const dynamic = "force-dynamic";
 
