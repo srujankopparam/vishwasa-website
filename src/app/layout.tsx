@@ -5,6 +5,7 @@ import ClientLayoutWrapper from "../components/ClientLayoutWrapper";
 import { CartProvider } from "../context/CartContext";
 import { SettingsProvider } from "../context/SettingsContext";
 import { sql } from "@vercel/postgres";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({
@@ -69,6 +70,7 @@ export default async function RootLayout({
             </ClientLayoutWrapper>
           </CartProvider>
         </SettingsProvider>
+        <Analytics />
       </body>
     </html>
   );
