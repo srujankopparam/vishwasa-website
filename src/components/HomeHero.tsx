@@ -73,47 +73,47 @@ export default function HomeHero() {
               </div>
             </div>
 
-            {/* Right side — floating product collage */}
+            {/* Right side — 3 product images */}
             <div className="relative flex items-center justify-center animate-fade-in order-first lg:order-last mb-10 lg:mb-0 w-full mt-10 lg:mt-0">
-              <div className="absolute w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] lg:w-[600px] lg:h-[600px] bg-orange/10 rounded-full blur-[80px] -z-10" />
-              
-              <div className="relative w-full max-w-[360px] sm:max-w-[500px] lg:max-w-[600px] h-[360px] sm:h-[500px] lg:h-[600px]">
-                
-                {/* Thengol - Top Center/Slightly back */}
-                <div className="absolute z-10 top-[2%] sm:top-[5%] left-[20%] w-[35%] h-[35%] animate-float rotate-[-15deg] hover:rotate-[-5deg] hover:scale-110 transition-all duration-300">
-                  <Image src="https://i.postimg.cc/LhccQ5TC/thengol-removebg-preview.png" alt="Thengol" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-contain drop-shadow-xl" />
-                </div>
+              {/* Soft glow background */}
+              <div className="absolute w-[300px] h-[300px] sm:w-[480px] sm:h-[480px] lg:w-[560px] lg:h-[560px] bg-orange/10 rounded-full blur-[80px] -z-10" />
 
-                {/* Ribbon - Top Right */}
-                <div className="absolute z-10 top-[15%] right-[-10%] sm:right-[-5%] w-[38%] h-[38%] animate-float-fast rotate-[25deg] hover:rotate-[15deg] hover:z-40 hover:scale-110 transition-all duration-300">
-                  <Image src="https://i.postimg.cc/V5xxZvRZ/ribbon-removebg-preview.png" alt="Ribbon Pakoda" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-contain drop-shadow-xl" />
-                </div>
+              <div className="relative w-full max-w-[360px] sm:max-w-[480px] lg:max-w-[560px] h-[360px] sm:h-[480px] lg:h-[560px]">
 
-                {/* Main Kodubale Bowl (Center) */}
-                <div className="relative z-20 w-[90%] h-[90%] mx-auto mt-[5%] animate-float group">
+                {/* Boondi — top left */}
+                <div className="absolute z-20 top-[0%] left-[0%] w-[52%] h-[52%] animate-float rotate-[-8deg] hover:rotate-0 hover:scale-110 transition-all duration-300">
                   <Image
-                    src="https://i.postimg.cc/Fs10s2BX/Gemini-Generated-Image-l5a3vml5a3vml5a3.png"
-                    alt="Handcrafted Authentic Delicious Vishwasa Snacks"
+                    src="https://i.postimg.cc/7bJvN03y/boondi1-removebg-preview.png"
+                    alt="Boondi"
                     fill
                     priority
-                    sizes="(max-width: 768px) 90vw, 50vw"
-                    className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-1000"
+                    sizes="(max-width: 768px) 45vw, 28vw"
+                    className="object-contain drop-shadow-2xl"
                   />
                 </div>
 
-                {/* Boondi - Bottom Left */}
-                <div className="absolute z-30 bottom-[5%] sm:bottom-[10%] left-[-15%] sm:left-[-10%] w-[42%] h-[42%] animate-float-reverse rotate-[-10deg] hover:rotate-0 hover:scale-110 transition-all duration-300">
-                  <Image src="https://i.postimg.cc/7bJvN03y/boondi1-removebg-preview.png" alt="Boondi" fill sizes="(max-width: 768px) 40vw, 25vw" className="object-contain py-2 drop-shadow-2xl" />
+                {/* Namkeen — top right, slightly lower */}
+                <div className="absolute z-20 top-[10%] right-[0%] w-[50%] h-[50%] animate-float-fast rotate-[10deg] hover:rotate-0 hover:scale-110 transition-all duration-300">
+                  <Image
+                    src="https://i.postimg.cc/kD00YGcH/IMG-20240929-WA0020-removebg-preview.png"
+                    alt="Namkeen Mixture"
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 45vw, 28vw"
+                    className="object-contain drop-shadow-2xl"
+                  />
                 </div>
 
-                {/* Mixture - Bottom Right */}
-                <div className="absolute z-40 bottom-[-5%] sm:bottom-[0%] right-[-15%] sm:right-[-10%] w-[45%] h-[45%] animate-float rotate-[15deg] hover:rotate-0 hover:scale-110 transition-all duration-300">
-                  <Image src="https://i.postimg.cc/kD00YGcH/IMG-20240929-WA0020-removebg-preview.png" alt="Namkeen Mixture" fill sizes="(max-width: 768px) 40vw, 25vw" className="object-contain drop-shadow-2xl" />
-                </div>
-
-                {/* Khara - Top Left/Middle */}
-                <div className="absolute z-40 top-[35%] left-[-20%] sm:left-[-15%] w-[35%] h-[35%] animate-float-fast rotate-[-25deg] hover:rotate-[-10deg] hover:scale-110 transition-all duration-300">
-                  <Image src="https://i.postimg.cc/23ss9ywK/khara-removebg-preview.png" alt="Khara Base" fill sizes="(max-width: 768px) 30vw, 20vw" className="object-contain drop-shadow-xl" />
+                {/* Khara — bottom center */}
+                <div className="absolute z-30 bottom-[0%] left-[22%] w-[56%] h-[56%] animate-float-reverse rotate-[-5deg] hover:rotate-0 hover:scale-110 transition-all duration-300">
+                  <Image
+                    src="https://i.postimg.cc/23ss9ywK/khara-removebg-preview.png"
+                    alt="Khara"
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 50vw, 32vw"
+                    className="object-contain drop-shadow-2xl"
+                  />
                 </div>
 
               </div>
