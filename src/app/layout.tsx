@@ -14,6 +14,12 @@ const playfair = Playfair_Display({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
+  const defaultTitle = 'Vishwasa Foods – Traditional South Indian Snacks';
+  const defaultDescription = 'Authentic murukku, mixture, banana chips, chakli, kodubale & nippattu. Made with cold-pressed peanut oil and fresh butter. No palm oil, no preservatives. FSSAI certified.';
+
+  let title = defaultTitle;
+  let description = defaultDescription;
+
   try {
     const { rows } = await sql`
       SELECT key, value FROM website_settings
@@ -23,18 +29,29 @@ export async function generateMetadata(): Promise<Metadata> {
       (acc: Record<string, string>, row: any) => ({ ...acc, [row.key]: row.value }),
       {}
     );
-    return {
-      title: s["seoTitle"] || "Vishwasa - Traditional South Indian Snacks",
-      description:
-        s["seoDescription"] ||
-        "Mother's Trust, Nature's Best. Traditional recipes made with better ingredients, no palm oil, and cold-pressed oils.",
-    };
+    title = s["seoTitle"] || defaultTitle;
+    description = s["seoDescription"] || defaultDescription;
   } catch {
-    return {
-      title: "Vishwasa - Traditional South Indian Snacks",
-      description: "Mother's Trust, Nature's Best.",
-    };
+    // DB unavailable – fall back to defaults
   }
+
+  return {
+    metadataBase: new URL('https://vishwasa.com'),
+    title: {
+      default: title,
+      template: '%s | Vishwasa Foods',
+    },
+    description,
+    keywords: ['murukku', 'South Indian snacks', 'banana chips', 'mixture', 'chakli', 'kodubale', 'nippattu', 'traditional snacks', 'Bangalore snacks', 'no preservatives', 'cold pressed oil'],
+    openGraph: {
+      title,
+      description: "Mother's Trust, Nature's Best. Authentic snacks made the traditional way.",
+      url: 'https://vishwasa.com',
+      siteName: 'Vishwasa Foods',
+      locale: 'en_IN',
+      type: 'website',
+    },
+  };
 }
 
 export const dynamic = "force-dynamic";
